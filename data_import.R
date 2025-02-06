@@ -343,11 +343,22 @@ profile_vars <- c(
   Female75_to_79_years = "S0101_C05_017",
   Female80_to_84_years = "S0101_C05_018")
 
-austin_data <- get_acs(
+austin_data_county <- get_acs(
   geography = "county",
   variables = profile_vars,
   year = 2023,
   state = "TX",
   county = "Travis",
-  output = "wide"
+  output = "wide",
+  survey = "acs1"
 )
+
+austin_data_place <- get_acs(
+  geography = "place",
+  variables = profile_vars,
+  year = 2023,
+  state = "TX",
+  output = "wide",
+  survey = "acs1"
+)%>%
+  filter(str_detect(NAME, "Austin"))
