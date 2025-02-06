@@ -3,9 +3,9 @@ library(tidyverse)
 library(sf)
 library(mapview)
 
-#census_api_key("CENSUS_API_KEY")
 
 year = 2023
+austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
 profile_vars <- c(
   Total_Pop = "S0101_C01_001",
@@ -346,7 +346,7 @@ profile_vars <- c(
 austin_data_county <- get_acs(
   geography = "county",
   variables = profile_vars,
-  year = 2023,
+  year = year,
   state = "TX",
   county = "Travis",
   output = "wide",
@@ -356,9 +356,50 @@ austin_data_county <- get_acs(
 austin_data_place <- get_acs(
   geography = "place",
   variables = profile_vars,
-  year = 2023,
+  year = year,
   state = "TX",
   output = "wide",
   survey = "acs1"
 )%>%
   filter(str_detect(NAME, "Austin"))
+
+austin_data_msa <- get_acs(
+  geography = "cbsa",
+  variables = profile_vars,
+  year = year,
+  #state = "TX",
+  output = "wide",
+  survey = "acs1"
+)%>%
+  filter(str_detect(NAME, "Austin"))
+
+austin_data_tracts <- get_acs(
+  geography = "tract",
+  variables = profile_vars,
+  year = year,
+  state = "TX",
+  county = austin_msa_counties,,
+  output = "wide",
+  survey = "acs5"
+)
+
+
+austin_data_tracts_geo <- get_acs(
+  geography = "tract",
+  variables = profile_vars,
+  year = year,
+  state = "TX",
+  county = austin_msa_counties,
+  output = "wide",
+  survey = "acs5",
+  geometry = TRUE,
+  cb = FALSE,
+  keep_geo_vars = TRUE
+)
+
+write_csv(austin_data_county, "raw-data/austin_data_county.csv")
+write_csv(austin_data_place, "raw-data/austin_data_place.csv")
+write_csv(austin_data_msa, "raw-data/austin_data_msa.csv")
+write_csv(austin_data_tracts, "raw-data/austin_data_tracts.csv")
+
+write_rds(austin_data_tracts_geo, "raw-data/austin_data_tracts_geo.rds")
