@@ -7,8 +7,11 @@ library(mapview)
 year = 2023
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
+#List of ACS variables
 profile_vars <- c(
   Total_Pop = "S0101_C01_001",
+  
+  #Age Brackets
   Total_Pop_under5 = "S0101_C01_002",
   Total_Pop_5to9 = "S0101_C01_003",
   Total_Pop_10to14 = "S0101_C01_004",
@@ -32,6 +35,8 @@ profile_vars <- c(
   Total_Pop_65plus = "S0101_C01_030",
   Perc65plus = "S0101_C02_030",
   MedianAge = "S0101_C01_032",
+  
+  #Foreign Born and Native Born
   TotalFBandNB = "B05002_001",
   TotalFB = "B05002_013",
   FB_cit_Europe = "B05002_015",
@@ -378,7 +383,7 @@ austin_data_tracts <- get_acs(
   variables = profile_vars,
   year = year,
   state = "TX",
-  county = austin_msa_counties,,
+  county = austin_msa_counties,
   output = "wide",
   survey = "acs5"
 )
@@ -397,9 +402,9 @@ austin_data_tracts_geo <- get_acs(
   keep_geo_vars = TRUE
 )
 
-write_csv(austin_data_county, "raw-data/austin_data_county.csv")
-write_csv(austin_data_place, "raw-data/austin_data_place.csv")
-write_csv(austin_data_msa, "raw-data/austin_data_msa.csv")
-write_csv(austin_data_tracts, "raw-data/austin_data_tracts.csv")
+#write_csv(austin_data_county, "raw-data/austin_data_county.csv")
+#write_csv(austin_data_place, "raw-data/austin_data_place.csv")
+#write_csv(austin_data_msa, "raw-data/austin_data_msa.csv")
+#write_csv(austin_data_tracts, "raw-data/austin_data_tracts.csv")
 
-write_rds(austin_data_tracts_geo, "raw-data/austin_data_tracts_geo.rds")
+#write_rds(austin_data_tracts_geo, "raw-data/austin_data_tracts_geo.rds")
