@@ -3,12 +3,15 @@ library(tidyverse)
 library(sf)
 library(mapview)
 
-#census_api_key("CENSUS_API_KEY")
 
 year = 2023
+austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
+#List of ACS variables
 profile_vars <- c(
   Total_Pop = "S0101_C01_001",
+  
+  #Age Brackets
   Total_Pop_under5 = "S0101_C01_002",
   Total_Pop_5to9 = "S0101_C01_003",
   Total_Pop_10to14 = "S0101_C01_004",
@@ -32,6 +35,8 @@ profile_vars <- c(
   Total_Pop_65plus = "S0101_C01_030",
   Perc65plus = "S0101_C02_030",
   MedianAge = "S0101_C01_032",
+  
+  #Foreign Born and Native Born
   TotalFBandNB = "B05002_001",
   TotalFB = "B05002_013",
   FB_cit_Europe = "B05002_015",
@@ -343,11 +348,63 @@ profile_vars <- c(
   Female75_to_79_years = "S0101_C05_017",
   Female80_to_84_years = "S0101_C05_018")
 
-austin_data <- get_acs(
+austin_data_county <- get_acs(
   geography = "county",
   variables = profile_vars,
-  year = 2023,
+  year = year,
   state = "TX",
   county = "Travis",
-  output = "wide"
+  output = "wide",
+  survey = "acs1"
 )
+
+austin_data_place <- get_acs(
+  geography = "place",
+  variables = profile_vars,
+  year = year,
+  state = "TX",
+  output = "wide",
+  survey = "acs1"
+)%>%
+  filter(str_detect(NAME, "Austin"))
+
+austin_data_msa <- get_acs(
+  geography = "cbsa",
+  variables = profile_vars,
+  year = year,
+  #state = "TX",
+  output = "wide",
+  survey = "acs1"
+)%>%
+  filter(str_detect(NAME, "Austin"))
+
+austin_data_tracts <- get_acs(
+  geography = "tract",
+  variables = profile_vars,
+  year = year,
+  state = "TX",
+  county = austin_msa_counties,
+  output = "wide",
+  survey = "acs5"
+)
+
+
+austin_data_tracts_geo <- get_acs(
+  geography = "tract",
+  variables = profile_vars,
+  year = year,
+  state = "TX",
+  county = austin_msa_counties,
+  output = "wide",
+  survey = "acs5",
+  geometry = TRUE,
+  cb = FALSE,
+  keep_geo_vars = TRUE
+)
+
+#write_csv(austin_data_county, "raw-data/austin_data_county.csv")
+#write_csv(austin_data_place, "raw-data/austin_data_place.csv")
+#write_csv(austin_data_msa, "raw-data/austin_data_msa.csv")
+#write_csv(austin_data_tracts, "raw-data/austin_data_tracts.csv")
+
+#write_rds(austin_data_tracts_geo, "raw-data/austin_data_tracts_geo.rds")
