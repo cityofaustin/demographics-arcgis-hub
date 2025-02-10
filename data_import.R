@@ -2,6 +2,7 @@ library(tidycensus)
 library(tidyverse)
 library(sf)
 library(mapview)
+library(tigris)
 
 
 year = 2023
@@ -348,6 +349,7 @@ profile_vars <- c(
   Female75_to_79_years = "S0101_C05_017",
   Female80_to_84_years = "S0101_C05_018")
 
+#Query for ACS 1-year data for Travis County
 austin_data_county <- get_acs(
   geography = "county",
   variables = profile_vars,
@@ -358,6 +360,7 @@ austin_data_county <- get_acs(
   survey = "acs1"
 )
 
+#Query for ACS 1-year data for the city of Austin
 austin_data_place <- get_acs(
   geography = "place",
   variables = profile_vars,
@@ -368,6 +371,7 @@ austin_data_place <- get_acs(
 )%>%
   filter(str_detect(NAME, "Austin"))
 
+#Query for ACS 1-year data for the five-county Austin MSA (Metropolitan Statistical Area)
 austin_data_msa <- get_acs(
   geography = "cbsa",
   variables = profile_vars,
@@ -378,6 +382,8 @@ austin_data_msa <- get_acs(
 )%>%
   filter(str_detect(NAME, "Austin"))
 
+#Query for ACS 5-year data for the tracts in the five-county Austin MSA
+#5-year ACS is needed for tracts because 1-year is only reported for geographies with over 65,000 people
 austin_data_tracts <- get_acs(
   geography = "tract",
   variables = profile_vars,
@@ -388,23 +394,13 @@ austin_data_tracts <- get_acs(
   survey = "acs5"
 )
 
+#Query for the geographic boundaries of the tracts in the five-county Austin MSA
+austin_tracts_geo <- tracts(state = "TX", county = austin_msa_counties, year = year, cb = FALSE)
 
-austin_data_tracts_geo <- get_acs(
-  geography = "tract",
-  variables = profile_vars,
-  year = year,
-  state = "TX",
-  county = austin_msa_counties,
-  output = "wide",
-  survey = "acs5",
-  geometry = TRUE,
-  cb = FALSE,
-  keep_geo_vars = TRUE
-)
+#Rename and combine queried data for export
+austin_acs1_2023 <- bind_rows(austin_data_county, austin_data_place, austin_data_msa)
+austin_acs5_2023 <- austin_data_tracts
 
-#write_csv(austin_data_county, "raw-data/austin_data_county.csv")
-#write_csv(austin_data_place, "raw-data/austin_data_place.csv")
-#write_csv(austin_data_msa, "raw-data/austin_data_msa.csv")
-#write_csv(austin_data_tracts, "raw-data/austin_data_tracts.csv")
-
-#write_rds(austin_data_tracts_geo, "raw-data/austin_data_tracts_geo.rds")
+#write_csv(austin_acs1_2023, "raw-data/austin_acs1_2023.csv")
+#write_csv(austin_acs5_2023, "raw-data/austin_acs5_2023.csv")
+#write_sf(austin_tracts_geo, "raw-data/austin_tracts_geo.geojson")
