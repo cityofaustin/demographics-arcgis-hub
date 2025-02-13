@@ -90,7 +90,7 @@ profile_vars <- c(
   Male80_to_84_years = "S0101_C03_018",
   Male85_years_and_over = "S0101_C03_019",
   FemaleUnder_5_years = "S0101_C05_002",
-  Female5_to_9_years = "S0101_C05_00",
+  Female5_to_9_years = "S0101_C05_003",
   Female10_to_14_years = "S0101_C05_004",
   Female15_to_19_years = "S0101_C05_005",
   Female20_to_24_years = "S0101_C05_006",
