@@ -70,6 +70,16 @@ profile_vars <- c(
   HispanicSpanishAmerican = "B03001_030",
   HispanicAllOtherHispanic = "B03001_031",
   
+  #Asian Origin Top 5 Ranking
+  AsianIndian = "C02015_002",
+  Chinese = "C02015_003",
+  Filipino = "C02015_004",
+  Japanese = "C02015_005",
+  Korean = "C02015_006",
+  Vietnamese = "C02015_007",
+  OtherAsian = "C02015_008",
+  
+  
   #Population by Age
   MaleUnder_5_years = "S0101_C03_002",
   Male5_to_9_years = "S0101_C03_003",
@@ -187,12 +197,12 @@ profile_vars <- c(
   disability_SelfCareDifficulty = "S1810_C03_055",
   disability_IndependentLivingDifficulty = "S1810_C03_063",
   pct_poverty = "S1701_C03_001",
-  BlackBelowPoverty = "S1701_C03_014",
-  AsianBelowPoverty = "S1701_C03_016",
-  OtherBelowPoverty = "S1701_C03_018",
-  MultiracialBelowPoverty = "S1701_C03_019",
-  HispanicBelowPoverty = "S1701_C03_020",
-  NHWhiteBelowPoverty = "S1701_C03_021",
+  PctBlackBelowPov = "S1701_C03_014",
+  PctAsianBelowPov = "S1701_C03_016",
+  PctOtherBelowPov = "S1701_C03_018",
+  PctMultiracialBelowPov = "S1701_C03_019",
+  PctHispanicBelowPov = "S1701_C03_020",
+  PctNHWhiteBelowPov = "S1701_C03_021",
   PercHHSNAP = "S2201_C04_001",
   PercBlackSNAP = "S2201_C04_026",
   PercAIANSNAP = "S2201_C04_027",
