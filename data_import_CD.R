@@ -173,7 +173,7 @@ profile_vars <- c(
 
 #Query for ACS 5-year data for the tracts in the five-county Austin MSA
 #5-year ACS is needed for tracts because 1-year is only reported for geographies with over 65,000 people
-austin_data_tracts <- get_acs(
+austin_data_tractsCD <- get_acs(
   geography = "tract",
   variables = profile_vars,
   year = year,
@@ -187,9 +187,4 @@ austin_data_tracts <- get_acs(
 austin_tracts_geo <- tracts(state = "TX", county = austin_msa_counties, year = year, cb = FALSE)
 
 #Rename and combine queried data for export
-austin_acs1_2023 <- bind_rows(austin_data_county, austin_data_place, austin_data_msa)
-austin_acs5_2023 <- austin_data_tracts
-
-write_csv(austin_acs1_2023, "raw-data/austin_acs1_2023.csv")
-write_csv(austin_acs5_2023, "raw-data/austin_acs5_2023.csv")
-write_sf(austin_tracts_geo, "raw-data/austin_tracts_geo.geojson")
+austin_acs5_2023 <- austin_data_tractsCD
