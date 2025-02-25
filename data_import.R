@@ -15,8 +15,8 @@ profile_vars <- c(
   #Population
   Total_Pop = "S0101_C01_001",
   MedianAge = "S0101_C01_032",
-  TotalFBandNB = "B05002_001",
   TotalFB = "B05002_013",
+  TotalFBandNB = "B05002_001",
   FB_cit_Europe = "B05002_015",
   FB_cit_Asia = "B05002_016",
   FB_cit_Africa = "B05002_017",
@@ -154,6 +154,7 @@ profile_vars <- c(
   plus16_InLaborForce = "DP03_0002",
   
   #Employment Class
+  WorkerClassUniverse = "S2408_C01_001",
   emp_PrivateForProfit = "S2408_C01_002",
   emp_PrivatNonProfit = "S2408_C01_005",
   emp_LocalGov = "S2408_C01_006",
@@ -174,15 +175,11 @@ profile_vars <- c(
   PercHispBAhigher = "S1501_C02_054",
   
   #Housing Costs
-  HU_lessthan20k = "S2503_C01_025",
+  CostBurdenedUniverse = "S2503_C01_001",
   CostBurdened_lessthan20k = "S2503_C01_028",
-  HU_20kto34999 = "S2503_C01_029",
   CostBurdened_20kto34999 = "S2503_C01_032",
-  HU_35kto49999 = "S2503_C01_033",
   CostBurdened_35kto49999 = "S2503_C01_036",
-  HU_50kto74999 = "S2503_C01_037",
   CostBurdened_50kto74999 = "S2503_C01_040",
-  HU_75kmore = "S2503_C01_041",
   CostBurdened_75kmore = "S2503_C01_044",
   
   #Communities of Interest
@@ -282,17 +279,6 @@ austin_data_msa <- get_acs(
 )%>%
   filter(str_detect(NAME, "Austin"))
 
-#Query for ACS 5-year data for the tracts in the five-county Austin MSA
-#5-year ACS is needed for tracts because 1-year is only reported for geographies with over 65,000 people
-austin_data_tracts <- get_acs(
-  geography = "tract",
-  variables = profile_vars,
-  year = year,
-  state = "TX",
-  county = austin_msa_counties,
-  output = "wide",
-  survey = "acs5"
-)
 
 #Query for the geographic boundaries of the tracts in the five-county Austin MSA
 austin_tracts_geo <- tracts(state = "TX", county = austin_msa_counties, year = year, cb = FALSE)
@@ -301,6 +287,37 @@ austin_tracts_geo <- tracts(state = "TX", county = austin_msa_counties, year = y
 austin_acs1_2023 <- bind_rows(austin_data_county, austin_data_place, austin_data_msa)
 austin_acs5_2023 <- austin_data_tracts
 
-write_csv(austin_acs1_2023, "raw-data/austin_acs1_2023.csv")
-write_csv(austin_acs5_2023, "raw-data/austin_acs5_2023.csv")
-write_sf(austin_tracts_geo, "raw-data/austin_tracts_geo.geojson")
+#write_csv(austin_acs1_2023, "raw-data/austin_acs1_2023.csv")
+#write_sf(austin_tracts_geo, "raw-data/austin_tracts_geo.geojson")
+
+
+#Step 2: Data cleaning
+
+#remove M columns and rename E columns
+margin_clean <- austin_acs1_2023 |>
+  select(!ends_with("M"))
+
+data_clean <- margin_clean |>
+  mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 1),
+         BornEur = (FB_cit_EuropeE + FB_noncit_EuropeE),
+         BornAsia = (FB_cit_AsiaE + FB_noncit_AsiaE),
+         BornAfr = (FB_cit_AfricaE + FB_noncit_AfricaE),
+         BornOceania = (FB_cit_OceaniaE + FB_noncit_OceaniaE),
+         BornLA = (FB_cit_LatinAmerE + FB_noncit_LatinAmerE),
+         BornNA = (FB_cit_NorthAmerE + FB_noncit_NorthAmerE),
+         emp_Private = (emp_PrivateForProfitE + emp_PrivatNonProfitE),
+         emp_Government = (emp_LocalGovE + emp_StateGovE + emp_FedGovE),
+         pct_private = round((emp_Private/(WorkerClassUniverseE)*100), digits = 1),
+         pct_government = round((emp_Government/(WorkerClassUniverseE)*100), digits = 1),
+         pct_selfemploy = round((emp_SelfEmployE/(WorkerClassUniverseE)*100), digits = 1),
+         Total_Cost_Burdened_HH = (CostBurdened_lessthan20kE + CostBurdened_20kto34999E + CostBurdened_35kto49999E + CostBurdened_50kto74999E + CostBurdened_75kmoreE),
+         pct_cost_burdened = round(((Total_Cost_Burdened_HH/CostBurdenedUniverseE)*100), digits = 1),
+         Perc65PlusAlone = round(((over65AloneE/over65HHE)*100), digits = 1),
+         PercBlackOwner = round(((HHBlackOwnerE/HHBlackE)*100), digits = 1),
+         PercBlackRenter = round(((HHBlackRenterE/HHBlackE)*100), digits = 1),
+         PercAsianOwner = round(((HHAsianOwnerE/HHAsianE)*100), digits = 1),
+         PercAsianRenter = round(((HHAsianRenterE/HHAsianE)*100), digits = 1),
+         PercNHWhiteOwner = round(((HH_NHWhiteOwnerE/HH_NHWhiteE)*100), digits = 1),
+         PercNHWhiteRenter = round(((HH_NHWhiteRenterE/HH_NHWhiteE)*100), digits = 1),
+         PercHispanicOwner = round(((HH_HispanicOwnerE/HH_HispanicE)*100), digits = 1),
+         PercHispanicRenter = round(((HH_HispanicRenterE/HH_HispanicE)*100)), digits = 1)
