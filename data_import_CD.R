@@ -3,6 +3,8 @@ library(tidyverse)
 library(sf)
 library(mapview)
 library(tigris)
+library(readxl)
+library(data.table)
 
 census_api_key(Sys.getenv("CENSUS_API_KEY"))
 
@@ -87,6 +89,7 @@ profile_vars <- c(
   plus16_InLaborForce = "DP03_0002",
   
   #Employment Class
+  WorkerClassUniverse = "S2408_C01_001",
   emp_PrivateForProfit = "S2408_C01_002",
   emp_PrivatNonProfit = "S2408_C01_005",
   emp_LocalGov = "S2408_C01_006",
@@ -100,15 +103,11 @@ profile_vars <- c(
   BAorhigher = "S1501_C01_015",
   
   #Housing Costs
-  HU_lessthan20k = "S2503_C01_025",
+  CostBurdenedUniverse = "S2503_C01_001",
   CostBurdened_lessthan20k = "S2503_C01_028",
-  HU_20kto34999 = "S2503_C01_029",
   CostBurdened_20kto34999 = "S2503_C01_032",
-  HU_35kto49999 = "S2503_C01_033",
   CostBurdened_35kto49999 = "S2503_C01_036",
-  HU_50kto74999 = "S2503_C01_037",
   CostBurdened_50kto74999 = "S2503_C01_040",
-  HU_75kmore = "S2503_C01_041",
   CostBurdened_75kmore = "S2503_C01_044",
   
   #Communities of Interest
@@ -188,3 +187,62 @@ austin_tracts_geo <- tracts(state = "TX", county = austin_msa_counties, year = y
 
 #Rename and combine queried data for export
 austin_acs5_2023 <- austin_data_tractsCD
+
+#Step 2: Data cleaning
+
+#remove M columns
+margin_clean_CD <- austin_acs5_2023 |>
+  select(!ends_with("M"))
+
+#Import Crosswalk from CSV
+#crosswalk <- read.csv("CD_Crosswalk_2025.csv", TRUE, ",")
+crosswalk <- read_excel("CD_Crosswalk.xlsx")
+
+#Merge crosswalk and Variables
+merged <- full_join(margin_clean_CD, crosswalk, by=c("GEOID" = "GEOID20"))
+
+#Calculate new values from crosswalk
+#Calculate Majority District
+
+
+#Calculate Minority District
+
+#combine variables into districts
+
+#Calculate final percentages for profiles
+data_clean_CD <- margin_clean_CD |>
+  mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 1),
+         PercHH_with_under18 = round(((HH_with_under18E/TotalHHE)*100), digits = 1),
+         PercHH_livingalone = round(((HH_livingaloneE/TotalHHE)*100), digits = 1),
+         pct_unemployed = round(((UnemployedE/LaborForceE)*100), digits = 1),
+         emp_Private = (emp_PrivateForProfitE + emp_PrivatNonProfitE),
+         emp_Government = (emp_LocalGovE + emp_StateGovE + emp_FedGovE),
+         pct_private = round((emp_Private/(WorkerClassUniverseE)*100), digits = 1),
+         pct_government = round((emp_Government/(WorkerClassUniverseE)*100), digits = 1),
+         pct_selfemploy = round((emp_SelfEmployE/(WorkerClassUniverseE)*100), digits = 1),
+         PercHSorhigher = round(((HsorhigherE/Pop25andoverE)*100), digits = 1),
+         PercBAorhigher = round(((BAorhigherE/Pop25andoverE)*100), digits =1),
+         Total_Cost_Burdened_HH = (CostBurdened_lessthan20kE + CostBurdened_20kto34999E + CostBurdened_35kto49999E + CostBurdened_50kto74999E + CostBurdened_75kmoreE),
+         pct_cost_burdened = round(((Total_Cost_Burdened_HH/CostBurdenedUniverseE)*100), digits = 1),
+         PercNoHealthInsurance = round(((NoHealthInsuranceE/HealthInsuranceUniverseE)*100), digits = 1),
+         pct_disability = round(((DisabilityE/DisabilityUniverseE)*100), digits = 1),
+         pct_poverty = round(((BelowPovertyE/PovertyUniverseE)*100), digits = 1),
+         PctBlackBelowPov = round(((BlackBelowPovE/BlackPopE)*100), digits = 1),
+         PctAsianBelowPov = round(((AsianBelowPovE/AsianPopE)*100), digits = 1),
+         PctOtherBelowPov = round(((OtherBelowPovE/OtherPopE)*100), digits = 1),
+         PctMultiracialBelowPov = round(((MultiracialBelowPovE/MultiracialPopE)*100), digits = 1),
+         PctHispanicBelowPov = round(((HispanicBelowPovE/HispanicPopE)*100), digits = 1),
+         PctNHWhiteBelowPov = round(((NHWhiteBelowPovE/NHWhitePopE)*100), digits = 1),
+         PercHHSNAP = round(((HHSNAPE/SNAPUniverseE)*100), digits = 1),
+         PercNoVehicle = round(((NoVehicleE/VehicleUniverseE)*100), digits = 1),
+         Perc65PlusAlone = round(((over65AloneE/over65HHE)*100), digits = 1),
+         PercLimitedEnglish = round(((LimitedEnglishE/LimitedEnglishUniverseE)*100), digits = 1),
+         pct_no_internet = round(((NoInternetE/InternetUniverseE)*100), digits = 1),
+         PercOwner = round(((OwnerOccupiedE/OccupiedHUE)*100), digits = 1),
+         PercRenter = round(((RenterOccupiedE/OccupiedHUE)*100), digits = 1),
+         PercDrovealone = round(((DroveAloneE/CommuteUniverseE)*100), digits = 1),
+         PercCarpooled = round(((CarpooledE/CommuteUniverseE)*100), digits = 1),
+         Pct_public_transport = round(((PublicTransportE/CommuteUniverseE)*100), digits = 1),
+         Perc_Walked = round(((WalkedE/CommuteUniverseE)*100), digits = 1),
+         PercOtherMeans = round(((OtherMeansE/CommuteUniverseE)*100), digits = 1),
+         pct_work_from_home = round(((WorkFromHomeE/CommuteUniverseE)*100), digits = 1))
