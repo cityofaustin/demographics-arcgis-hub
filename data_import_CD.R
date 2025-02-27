@@ -202,15 +202,35 @@ crosswalk <- read_excel("CD_Crosswalk.xlsx")
 merged <- full_join(margin_clean_CD, crosswalk, by=c("GEOID" = "GEOID20"))
 
 #Calculate new values from crosswalk
-#Calculate Majority District
+#Calculate Majority District Values
+merged$NAME <- NULL
 
+MajorityCD <- merged %>% mutate(across(ends_with("E"), ~Major_CD_Perc * .x))
 
-#Calculate Minority District
+#Calculate Minority District Values
+MinorityCD <- merged %>% mutate(across(ends_with("E"), ~Minor_CD_Perc * .x))
+
+#group Majority Values into districts
+GroupedMajority <- group_by(MajorityCD, Major_CD)
+SumMajority <- GroupedMajority %>%
+  select(ends_with("E")) %>%
+  summarise_all(sum, na.rm = TRUE)
+names(SumMajority)[names(SumMajority) == 'Major_CD'] <- 'CouncilDistrict'
+
+#Group Minority values into districts
+GroupedMinority <- group_by(MinorityCD, Minor_CD)
+SumMinority <- GroupedMinority %>%
+  select(ends_with("E")) %>%
+  summarise_all(sum, na.rm = TRUE)
+names(SumMinority)[names(SumMinority) == 'Minor_CD'] <- 'CouncilDistrict'
 
 #combine variables into districts
+BindedDistricts <- bind_rows(SumMajority, SumMinority) %>%
+  group_by(CouncilDistrict) %>%
+  summarise_all(sum, na.rm = TRUE)
 
 #Calculate final percentages for profiles
-data_clean_CD <- margin_clean_CD |>
+data_clean_CD <- BindedDistricts |>
   mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 1),
          PercHH_with_under18 = round(((HH_with_under18E/TotalHHE)*100), digits = 1),
          PercHH_livingalone = round(((HH_livingaloneE/TotalHHE)*100), digits = 1),
