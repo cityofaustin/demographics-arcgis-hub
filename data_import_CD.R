@@ -12,7 +12,7 @@ year = 2023
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
 #List of ACS variables
-profile_vars <- c(
+profile_varsCD <- c(
   
   #Population
   Total_Pop = "S0101_C01_001",
@@ -174,7 +174,7 @@ profile_vars <- c(
 #5-year ACS is needed for tracts because 1-year is only reported for geographies with over 65,000 people
 austin_data_tractsCD <- get_acs(
   geography = "tract",
-  variables = profile_vars,
+  variables = profile_varsCD,
   year = year,
   state = "TX",
   county = austin_msa_counties,
