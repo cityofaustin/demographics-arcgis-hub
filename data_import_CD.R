@@ -195,7 +195,6 @@ margin_clean_CD <- austin_acs5_2023 |>
   select(!ends_with("M"))
 
 #Import Crosswalk from CSV
-#crosswalk <- read.csv("CD_Crosswalk_2025.csv", TRUE, ",")
 crosswalk <- read_excel("CD_Crosswalk.xlsx")
 
 #Merge crosswalk and Variables
@@ -217,7 +216,7 @@ SumMajority <- GroupedMajority %>%
   summarise_all(sum, na.rm = TRUE)
 names(SumMajority)[names(SumMajority) == 'Major_CD'] <- 'CouncilDistrict'
 
-#Group Minority values into districts
+#Group Minority values into districts 
 GroupedMinority <- group_by(MinorityCD, Minor_CD)
 SumMinority <- GroupedMinority %>%
   select(ends_with("E")) %>%
@@ -228,6 +227,7 @@ names(SumMinority)[names(SumMinority) == 'Minor_CD'] <- 'CouncilDistrict'
 BindedDistricts <- bind_rows(SumMajority, SumMinority) %>%
   group_by(CouncilDistrict) %>%
   summarise_all(sum, na.rm = TRUE)
+
 
 #Calculate final percentages for profiles
 data_clean_CD <- BindedDistricts |>
@@ -266,3 +266,6 @@ data_clean_CD <- BindedDistricts |>
          Perc_Walked = round(((WalkedE/CommuteUniverseE)*100), digits = 1),
          PercOtherMeans = round(((OtherMeansE/CommuteUniverseE)*100), digits = 1),
          pct_work_from_home = round(((WorkFromHomeE/CommuteUniverseE)*100), digits = 1))
+
+#Add column with year of data
+data_clean_CD$Year <- "2023"

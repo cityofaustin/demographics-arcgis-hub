@@ -321,3 +321,6 @@ data_clean <- margin_clean |>
          PercNHWhiteRenter = round(((HH_NHWhiteRenterE/HH_NHWhiteE)*100), digits = 1),
          PercHispanicOwner = round(((HH_HispanicOwnerE/HH_HispanicE)*100), digits = 1),
          PercHispanicRenter = round(((HH_HispanicRenterE/HH_HispanicE)*100)), digits = 1)
+
+#Add column with year of data
+data_clean$Year <- "2023"
