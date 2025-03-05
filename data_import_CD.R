@@ -16,12 +16,13 @@ profile_varsCD <- c(
   
   #Population
   Total_Pop = "S0101_C01_001",
-  MedianAge = "S0101_C01_032",
+  #MedianAge = "S0101_C01_032",
   TotalFBandNB = "B05002_001",
   TotalFB = "B05002_013",
   Veterans = "S2101_C03_001",
   Plus65 = "S0101_C01_030",
   Under18 = "S0101_C01_022",
+  
   
   #Population by Race/Ethnicity
   NHWhite = "DP05_0082",
@@ -70,10 +71,63 @@ profile_varsCD <- c(
   Female75_to_79_years = "S0101_C05_017",
   Female80_to_84_years = "S0101_C05_018",
   Female85_years_and_over = "S0101_C05_019",
+  TotalUnder_5_years = "S0101_C01_002",
+  Total5_to_9_years = "S0101_C01_003",
+  Total10_to_14_years = "S0101_C01_004",
+  Total15_to_19_years = "S0101_C01_005",
+  Total20_to_24_years = "S0101_C01_006",
+  Total25_to_29_years = "S0101_C01_007",
+  Total30_to_34_years = "S0101_C01_008",
+  Total35_to_39_years = "S0101_C01_009",
+  Total40_to_44_years = "S0101_C01_010",
+  Total45_to_49_years = "S0101_C01_011",
+  Total50_to_54_years = "S0101_C01_012",
+  Total55_to_59_years = "S0101_C01_013",
+  Total60_to_64_years = "S0101_C01_014",
+  Total65_to_69_years = "S0101_C01_015",
+  Total70_to_74_years = "S0101_C01_016",
+  Total75_to_79_years = "S0101_C01_017",
+  Total80_to_84_years = "S0101_C01_018",
+  Total85_years_and_over = "S0101_C01_019",
+  
   
   #Income
-  MedianHouseholdIncome = "S1901_C01_012",
-  MedianFamilyIncome = "S1901_C02_012",
+  #MedianHouseholdIncome = "S1901_C01_012",
+  #MedianFamilyIncome = "S1901_C02_012",
+  HHTotal = "B19001_001",
+  HHLess10k = "B19001_002",
+  HH10kto14999 = "B19001_003",
+  HH15kto19999 = "B19001_004",
+  HH20kto24999 = "B19001_005",
+  HH25kto29999 = "B19001_006",
+  HH30kto34999 = "B19001_007",
+  HH35kto39999 = "B19001_008",
+  HH40kto44999 = "B19001_009",
+  HH45kto49999 = "B19001_010",
+  HH50kto59999 = "B19001_011",
+  HH60kto74999 = "B19001_012",
+  HH75kto99999 = "B19001_013",
+  HH100kto124999 = "B19001_014",
+  HH125kto149999 = "B19001_015",
+  HH150kto199999 = "B19001_016",
+  HH200kmore = "B19001_017",
+  FamTotal = "B19101_001",
+  FamLess10k = "B19101_002",
+  Fam10kto14999 = "B19101_003",
+  Fam15kto19999 = "B19101_004",
+  Fam20kto24999 = "B19101_005",
+  Fam25kto29999 = "B19101_006",
+  Fam30kto34999 = "B19101_007",
+  Fam35kto39999 = "B19101_008",
+  Fam40kto44999 = "B19101_009",
+  Fam45kto49999 = "B19101_010",
+  Fam50kto59999 = "B19101_011",
+  Fam60kto74999 = "B19101_012",
+  Fam75kto99999 = "B19101_013",
+  Fam100kto124999 = "B19101_014",
+  Fam125kto149999 = "B19101_015",
+  Fam150kto199999 = "B19101_016",
+  Fam200kmore = "B19101_017",
   
   #Households
   Occupied_HU = "DP04_0002",
@@ -167,7 +221,16 @@ profile_varsCD <- c(
   Walked = "DP03_0022",
   OtherMeans = "DP03_0023",
   WorkFromHome = "DP03_0024",
-  WorkersMeanTravelTime = "DP03_0025")
+  #WorkersMeanTravelTime = "DP03_0025"
+  CommuteLess10min = "B08134_002",
+  Commute10to14 = "B08134_003",
+  Commute15to19 = "B08134_004",
+  Commute20to24 = "B08134_005",
+  Commute25to29 = "B08134_006",
+  Commute30to34 = "B08134_007",
+  Commute35to44 = "B08134_008",
+  Commute45to59 = "B08134_009",
+  Commute60more = "B08134_010")
 
 
 #Query for ACS 5-year data for the tracts in the five-county Austin MSA
@@ -269,3 +332,5 @@ data_clean_CD <- BindedDistricts |>
 
 #Add column with year of data
 data_clean_CD$Year <- "2023"
+
+
