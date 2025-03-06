@@ -328,5 +328,78 @@ data_clean_CD <- BindedDistricts |>
          PercOtherMeans = round(((OtherMeansE/CommuteUniverseE)*100), digits = 1),
          pct_work_from_home = round(((WorkFromHomeE/CommuteUniverseE)*100), digits = 1))
 
+#Median variables for council districts can't be calculated from existing ACS median variables at the tract levell.
+#You need to calculate the median based on the distribution of values for each median variable.
+#Here we extract the component variables needed to calculate the median for each variable and export as a file. 
+#This time we are calculating in Excel and then reloading the medians back into R.
+median_components <- select(data_clean_CD,
+                            CouncilDistrict,
+                            
+                            HHLess10kE,
+                            HH10kto14999E,
+                            HH15kto19999E,
+                            HH20kto24999E,
+                            HH25kto29999E,
+                            HH30kto34999E,
+                            HH35kto39999E,
+                            HH40kto44999E,
+                            HH45kto49999E,
+                            HH50kto59999E,
+                            HH60kto74999E,
+                            HH75kto99999E,
+                            HH100kto124999E,
+                            HH125kto149999E,
+                            HH150kto199999E,
+                            HH200kmoreE,
+                            
+                            FamLess10kE,
+                            Fam10kto14999E,
+                            Fam15kto19999E,
+                            Fam20kto24999E,
+                            Fam25kto29999E,
+                            Fam30kto34999E,
+                            Fam35kto39999E,
+                            Fam40kto44999E,
+                            Fam45kto49999E,
+                            Fam50kto59999E,
+                            Fam60kto74999E,
+                            Fam75kto99999E,
+                            Fam100kto124999E,
+                            Fam125kto149999E,
+                            Fam150kto199999E,
+                            Fam200kmoreE, 
+                            
+                            TotalUnder_5_yearsE,
+                            Total5_to_9_yearsE,
+                            Total10_to_14_yearsE,
+                            Total15_to_19_yearsE,
+                            Total20_to_24_yearsE,
+                            Total25_to_29_yearsE,
+                            Total30_to_34_yearsE,
+                            Total35_to_39_yearsE,
+                            Total40_to_44_yearsE,
+                            Total45_to_49_yearsE,
+                            Total50_to_54_yearsE,
+                            Total55_to_59_yearsE,
+                            Total60_to_64_yearsE,
+                            Total65_to_69_yearsE,
+                            Total70_to_74_yearsE,
+                            Total75_to_79_yearsE,
+                            Total80_to_84_yearsE,
+                            Total85_years_and_overE,
+                            
+                            CommuteLess10minE,
+                            Commute10to14E,
+                            Commute15to19E,
+                            Commute20to24E,
+                            Commute25to29E,
+                            Commute30to34E,
+                            Commute35to44E,
+                            Commute45to59E,
+                            Commute60moreE)|>
+  filter(CouncilDistrict <= 10)
+
+write_csv(median_components, "median_components.csv")
+
 #Add column with year of data
 data_clean_CD$Year <- year
