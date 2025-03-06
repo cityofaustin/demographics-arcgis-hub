@@ -16,7 +16,6 @@ profile_varsCD <- c(
   
   #Population
   Total_Pop = "S0101_C01_001",
-  #MedianAge = "S0101_C01_032",
   TotalFBandNB = "B05002_001",
   TotalFB = "B05002_013",
   Veterans = "S2101_C03_001",
@@ -90,8 +89,6 @@ profile_varsCD <- c(
   Total85_years_and_over = "S0101_C01_019",
   
   #Income
-  #MedianHouseholdIncome = "S1901_C01_012",
-  #MedianFamilyIncome = "S1901_C02_012",
   HHTotal = "B19001_001",
   HHLess10k = "B19001_002",
   HH10kto14999 = "B19001_003",
@@ -129,7 +126,6 @@ profile_varsCD <- c(
   
   #Households
   Occupied_HU = "DP04_0002",
-  HH_average_size = "S1101_C01_002",
   TotalHH = "B11005_001",
   HH_with_under18 = "B11005_002",
   Families_total = "S1101_C01_003",
@@ -289,10 +285,14 @@ BindedDistricts <- bind_rows(SumMajority, SumMinority) %>%
   group_by(CouncilDistrict) %>%
   summarise_all(sum, na.rm = TRUE)
 
+#Remove extra district that resulted from null values.
+BindedDistricts <- BindedDistricts[-c(11), ]
+
 
 #Calculate final percentages for profiles
 data_clean_CD <- BindedDistricts |>
   mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 1),
+         HH_average_size = round((Total_PopE / HHTotalE), digits = 1),
          PercHH_with_under18 = round(((HH_with_under18E/TotalHHE)*100), digits = 1),
          PercHH_livingalone = round(((HH_livingaloneE/TotalHHE)*100), digits = 1),
          pct_unemployed = round(((UnemployedE/LaborForceE)*100), digits = 1),
@@ -328,7 +328,7 @@ data_clean_CD <- BindedDistricts |>
          PercOtherMeans = round(((OtherMeansE/CommuteUniverseE)*100), digits = 1),
          pct_work_from_home = round(((WorkFromHomeE/CommuteUniverseE)*100), digits = 1))
 
-#Median variables for council districts can't be calculated from existing ACS median variables at the tract levell.
+#Median variables for council districts can't be calculated from existing ACS median variables at the tract level.
 #You need to calculate the median based on the distribution of values for each median variable.
 #Here we extract the component variables needed to calculate the median for each variable and export as a file. 
 #This time we are calculating in Excel and then reloading the medians back into R.
@@ -401,5 +401,17 @@ median_components <- select(data_clean_CD,
 
 write_csv(median_components, "median_components.csv")
 
-#Add column with year of data
-data_clean_CD$Year <- year
+#Import final median spreadsheet 
+median_import <- read_excel("Median_Final.xlsx")
+
+#Merge imported medians with cleaned variable table.
+CD_Data <- full_join(data_clean_CD, median_import, by=c("CouncilDistrict" = "CouncilDistrict"))
+
+#Remove variables used for median calculations.
+CD_Data[4:37] <- list(NULL)
+CD_Data[11:19] <- list(NULL)
+CD_Data[51:68] <- list(NULL)
+
+#Add column with year of data and move column to the beginning.
+CD_Data$Year <- year
+Final_CD_Data <- CD_Data %>% relocate(Year, .before=CouncilDistrict)
