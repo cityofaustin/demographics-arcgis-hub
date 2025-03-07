@@ -415,3 +415,13 @@ CD_Data[51:68] <- list(NULL)
 #Add column with year of data and move column to the beginning.
 CD_Data$Year <- year
 Final_CD_Data <- CD_Data %>% relocate(Year, .before=CouncilDistrict)
+
+#Create table for PowerBI population pyramid visualizations
+pop_pyramid_data_CD <- Final_CD_Data |>
+  select(CouncilDistrict, Year, MaleUnder_5_yearsE:Female85_years_and_overE)|>
+  pivot_longer(cols = MaleUnder_5_yearsE:Female85_years_and_overE, names_to = "Age_Group", values_to = "Population")|>
+  separate_wider_delim(col = Age_Group, delim = "ale", names = c("Sex", "Age_Group"))|>
+  pivot_wider(names_from = Sex, values_from = Population)|>
+  rename(Male = M, Female = Fem)
+
+write_csv(pop_pyramid_data_CD, "data-clean/pop_pyramid_data_CD.csv")

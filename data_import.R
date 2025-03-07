@@ -324,3 +324,13 @@ data_clean <- margin_clean |>
 
 #Add column with year of data
 data_clean$Year <- "2023"
+
+#Create table for PowerBI population pyramid visualizations
+pop_pyramid_data <- data_clean |>
+  select(GEOID, NAME, Year, MaleUnder_5_yearsE:Female85_years_and_overE)|>
+  pivot_longer(cols = MaleUnder_5_yearsE:Female85_years_and_overE, names_to = "Age_Group", values_to = "Population")|>
+  separate_wider_delim(col = Age_Group, delim = "ale", names = c("Sex", "Age_Group"))|>
+  pivot_wider(names_from = Sex, values_from = Population)|>
+  rename(Male = M, Female = Fem)
+
+write_csv(pop_pyramid_data, "data-clean/pop_pyramid_data.csv")
