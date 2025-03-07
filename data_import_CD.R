@@ -16,7 +16,6 @@ profile_varsCD <- c(
   
   #Population
   Total_Pop = "S0101_C01_001",
-  MedianAge = "S0101_C01_032",
   TotalFBandNB = "B05002_001",
   TotalFB = "B05002_013",
   Veterans = "S2101_C03_001",
@@ -70,14 +69,63 @@ profile_varsCD <- c(
   Female75_to_79_years = "S0101_C05_017",
   Female80_to_84_years = "S0101_C05_018",
   Female85_years_and_over = "S0101_C05_019",
+  TotalUnder_5_years = "S0101_C01_002",
+  Total5_to_9_years = "S0101_C01_003",
+  Total10_to_14_years = "S0101_C01_004",
+  Total15_to_19_years = "S0101_C01_005",
+  Total20_to_24_years = "S0101_C01_006",
+  Total25_to_29_years = "S0101_C01_007",
+  Total30_to_34_years = "S0101_C01_008",
+  Total35_to_39_years = "S0101_C01_009",
+  Total40_to_44_years = "S0101_C01_010",
+  Total45_to_49_years = "S0101_C01_011",
+  Total50_to_54_years = "S0101_C01_012",
+  Total55_to_59_years = "S0101_C01_013",
+  Total60_to_64_years = "S0101_C01_014",
+  Total65_to_69_years = "S0101_C01_015",
+  Total70_to_74_years = "S0101_C01_016",
+  Total75_to_79_years = "S0101_C01_017",
+  Total80_to_84_years = "S0101_C01_018",
+  Total85_years_and_over = "S0101_C01_019",
   
   #Income
-  MedianHouseholdIncome = "S1901_C01_012",
-  MedianFamilyIncome = "S1901_C02_012",
+  HHTotal = "B19001_001",
+  HHLess10k = "B19001_002",
+  HH10kto14999 = "B19001_003",
+  HH15kto19999 = "B19001_004",
+  HH20kto24999 = "B19001_005",
+  HH25kto29999 = "B19001_006",
+  HH30kto34999 = "B19001_007",
+  HH35kto39999 = "B19001_008",
+  HH40kto44999 = "B19001_009",
+  HH45kto49999 = "B19001_010",
+  HH50kto59999 = "B19001_011",
+  HH60kto74999 = "B19001_012",
+  HH75kto99999 = "B19001_013",
+  HH100kto124999 = "B19001_014",
+  HH125kto149999 = "B19001_015",
+  HH150kto199999 = "B19001_016",
+  HH200kmore = "B19001_017",
+  FamTotal = "B19101_001",
+  FamLess10k = "B19101_002",
+  Fam10kto14999 = "B19101_003",
+  Fam15kto19999 = "B19101_004",
+  Fam20kto24999 = "B19101_005",
+  Fam25kto29999 = "B19101_006",
+  Fam30kto34999 = "B19101_007",
+  Fam35kto39999 = "B19101_008",
+  Fam40kto44999 = "B19101_009",
+  Fam45kto49999 = "B19101_010",
+  Fam50kto59999 = "B19101_011",
+  Fam60kto74999 = "B19101_012",
+  Fam75kto99999 = "B19101_013",
+  Fam100kto124999 = "B19101_014",
+  Fam125kto149999 = "B19101_015",
+  Fam150kto199999 = "B19101_016",
+  Fam200kmore = "B19101_017",
   
   #Households
   Occupied_HU = "DP04_0002",
-  HH_average_size = "S1101_C01_002",
   TotalHH = "B11005_001",
   HH_with_under18 = "B11005_002",
   Families_total = "S1101_C01_003",
@@ -167,7 +215,16 @@ profile_varsCD <- c(
   Walked = "DP03_0022",
   OtherMeans = "DP03_0023",
   WorkFromHome = "DP03_0024",
-  WorkersMeanTravelTime = "DP03_0025")
+  #WorkersMeanTravelTime = "DP03_0025"
+  CommuteLess10min = "B08134_002",
+  Commute10to14 = "B08134_003",
+  Commute15to19 = "B08134_004",
+  Commute20to24 = "B08134_005",
+  Commute25to29 = "B08134_006",
+  Commute30to34 = "B08134_007",
+  Commute35to44 = "B08134_008",
+  Commute45to59 = "B08134_009",
+  Commute60more = "B08134_010")
 
 
 #Query for ACS 5-year data for the tracts in the five-county Austin MSA
@@ -228,10 +285,14 @@ BindedDistricts <- bind_rows(SumMajority, SumMinority) %>%
   group_by(CouncilDistrict) %>%
   summarise_all(sum, na.rm = TRUE)
 
+#Remove extra district that resulted from null values.
+BindedDistricts <- BindedDistricts[-c(11), ]
+
 
 #Calculate final percentages for profiles
 data_clean_CD <- BindedDistricts |>
   mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 1),
+         HH_average_size = round((Total_PopE / HHTotalE), digits = 1),
          PercHH_with_under18 = round(((HH_with_under18E/TotalHHE)*100), digits = 1),
          PercHH_livingalone = round(((HH_livingaloneE/TotalHHE)*100), digits = 1),
          pct_unemployed = round(((UnemployedE/LaborForceE)*100), digits = 1),
@@ -267,5 +328,90 @@ data_clean_CD <- BindedDistricts |>
          PercOtherMeans = round(((OtherMeansE/CommuteUniverseE)*100), digits = 1),
          pct_work_from_home = round(((WorkFromHomeE/CommuteUniverseE)*100), digits = 1))
 
-#Add column with year of data
-data_clean_CD$Year <- "2023"
+#Median variables for council districts can't be calculated from existing ACS median variables at the tract level.
+#You need to calculate the median based on the distribution of values for each median variable.
+#Here we extract the component variables needed to calculate the median for each variable and export as a file. 
+#This time we are calculating in Excel and then reloading the medians back into R.
+median_components <- select(data_clean_CD,
+                            CouncilDistrict,
+                            
+                            HHLess10kE,
+                            HH10kto14999E,
+                            HH15kto19999E,
+                            HH20kto24999E,
+                            HH25kto29999E,
+                            HH30kto34999E,
+                            HH35kto39999E,
+                            HH40kto44999E,
+                            HH45kto49999E,
+                            HH50kto59999E,
+                            HH60kto74999E,
+                            HH75kto99999E,
+                            HH100kto124999E,
+                            HH125kto149999E,
+                            HH150kto199999E,
+                            HH200kmoreE,
+                            
+                            FamLess10kE,
+                            Fam10kto14999E,
+                            Fam15kto19999E,
+                            Fam20kto24999E,
+                            Fam25kto29999E,
+                            Fam30kto34999E,
+                            Fam35kto39999E,
+                            Fam40kto44999E,
+                            Fam45kto49999E,
+                            Fam50kto59999E,
+                            Fam60kto74999E,
+                            Fam75kto99999E,
+                            Fam100kto124999E,
+                            Fam125kto149999E,
+                            Fam150kto199999E,
+                            Fam200kmoreE, 
+                            
+                            TotalUnder_5_yearsE,
+                            Total5_to_9_yearsE,
+                            Total10_to_14_yearsE,
+                            Total15_to_19_yearsE,
+                            Total20_to_24_yearsE,
+                            Total25_to_29_yearsE,
+                            Total30_to_34_yearsE,
+                            Total35_to_39_yearsE,
+                            Total40_to_44_yearsE,
+                            Total45_to_49_yearsE,
+                            Total50_to_54_yearsE,
+                            Total55_to_59_yearsE,
+                            Total60_to_64_yearsE,
+                            Total65_to_69_yearsE,
+                            Total70_to_74_yearsE,
+                            Total75_to_79_yearsE,
+                            Total80_to_84_yearsE,
+                            Total85_years_and_overE,
+                            
+                            CommuteLess10minE,
+                            Commute10to14E,
+                            Commute15to19E,
+                            Commute20to24E,
+                            Commute25to29E,
+                            Commute30to34E,
+                            Commute35to44E,
+                            Commute45to59E,
+                            Commute60moreE)|>
+  filter(CouncilDistrict <= 10)
+
+write_csv(median_components, "median_components.csv")
+
+#Import final median spreadsheet 
+median_import <- read_excel("Median_Final.xlsx")
+
+#Merge imported medians with cleaned variable table.
+CD_Data <- full_join(data_clean_CD, median_import, by=c("CouncilDistrict" = "CouncilDistrict"))
+
+#Remove variables used for median calculations.
+CD_Data[4:37] <- list(NULL)
+CD_Data[11:19] <- list(NULL)
+CD_Data[51:68] <- list(NULL)
+
+#Add column with year of data and move column to the beginning.
+CD_Data$Year <- year
+Final_CD_Data <- CD_Data %>% relocate(Year, .before=CouncilDistrict)
