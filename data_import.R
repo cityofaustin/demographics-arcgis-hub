@@ -153,7 +153,7 @@ profile_vars <- c(
   PercHH_livingalone = "S1101_C01_013",
   
   #Employees
-  pct_unemployed = "DP03_0005P",
+  pct_unemployed = "DP03_0009P",
   plus16_InLaborForce = "DP03_0002",
   
   #Employment Class
@@ -240,6 +240,13 @@ profile_vars <- c(
   SpeakOtherLang = "S1601_C01_016",
   
   #Commute
+  DroveAlone = "B08006_003",
+  Carpooled = "B08006_004",
+  PublicTransport = "B08006_008",
+  Walked = "B08006_015",
+  Bicycle = "B08006_014",
+  TaxiMotorcycle = "B08006_016",
+  WorkFromHome = "B08006_017",
   PercDrovealone = "S0801_C01_003",
   PercCarpooled = "S0801_C01_004",
   Pct_public_transport = "S0801_C01_009",

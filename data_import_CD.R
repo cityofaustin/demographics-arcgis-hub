@@ -20,6 +20,7 @@ profile_varsCD <- c(
   Total_Pop = "S0101_C01_001",
   TotalFBandNB = "B05002_001",
   TotalFB = "B05002_013",
+  VeteranUniverse = "S2101_C01_001",
   Veterans = "S2101_C03_001",
   Plus65 = "S0101_C01_030",
   Under18 = "S0101_C01_022",
@@ -210,14 +211,14 @@ profile_varsCD <- c(
   SpeakOtherLang = "S1601_C01_016",
   
   #Commute
-  CommuteUniverse = "DP03_0018",
-  DroveAlone = "DP03_0019",
-  Carpooled = "DP03_0020",
-  PublicTransport = "DP03_0021",
-  Walked = "DP03_0022",
-  OtherMeans = "DP03_0023",
-  WorkFromHome = "DP03_0024",
-  #WorkersMeanTravelTime = "DP03_0025"
+  CommuteUniverse = "B08006_001",
+  DroveAlone = "B08006_003",
+  Carpooled = "B08006_004",
+  PublicTransport = "B08006_008",
+  Walked = "B08006_015",
+  Bicycle = "B08006_014",
+  TaxiMotorcycle = "B08006_016",
+  WorkFromHome = "B08006_017",
   CommuteLess10min = "B08134_002",
   Commute10to14 = "B08134_003",
   Commute15to19 = "B08134_004",
@@ -293,42 +294,46 @@ BindedDistricts <- BindedDistricts[-c(11), ]
 
 #Calculate final percentages for profiles
 data_clean_CD <- BindedDistricts |>
-  mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 1),
-         HH_average_size = round((Total_PopE / HHTotalE), digits = 1),
-         PercHH_with_under18 = round(((HH_with_under18E/TotalHHE)*100), digits = 1),
-         PercHH_livingalone = round(((HH_livingaloneE/TotalHHE)*100), digits = 1),
-         pct_unemployed = round(((UnemployedE/LaborForceE)*100), digits = 1),
+  mutate(Perc_ImmigrantsE = round(((TotalFBE / TotalFBandNBE)*100), digits = 1),
+         pct_veterans = round(((VeteransE/VeteranUniverseE)*100), digits = 1),
+         Perc65plusE = round(((Plus65E/Total_PopE)*100), digits = 1),
+         PercUnder18E = round(((Under18E/Total_PopE)*100), digits = 1),
+         HH_average_sizeE = round((Total_PopE / HHTotalE), digits = 1),
+         PercHH_with_under18E = round(((HH_with_under18E/TotalHHE)*100), digits = 1),
+         PercHH_livingaloneE = round(((HH_livingaloneE/TotalHHE)*100), digits = 1),
+         pct_unemployedE = round(((UnemployedE/LaborForceE)*100), digits = 1),
          emp_Private = (emp_PrivateForProfitE + emp_PrivatNonProfitE),
          emp_Government = (emp_LocalGovE + emp_StateGovE + emp_FedGovE),
          pct_private = round((emp_Private/(WorkerClassUniverseE)*100), digits = 1),
          pct_government = round((emp_Government/(WorkerClassUniverseE)*100), digits = 1),
          pct_selfemploy = round((emp_SelfEmployE/(WorkerClassUniverseE)*100), digits = 1),
-         PercHSorhigher = round(((HsorhigherE/Pop25andoverE)*100), digits = 1),
-         PercBAorhigher = round(((BAorhigherE/Pop25andoverE)*100), digits =1),
+         PercHSorhigherE = round(((HsorhigherE/Pop25andoverE)*100), digits = 1),
+         PercBAorhigherE = round(((BAorhigherE/Pop25andoverE)*100), digits =1),
          Total_Cost_Burdened_HH = (CostBurdened_lessthan20kE + CostBurdened_20kto34999E + CostBurdened_35kto49999E + CostBurdened_50kto74999E + CostBurdened_75kmoreE),
          pct_cost_burdened = round(((Total_Cost_Burdened_HH/CostBurdenedUniverseE)*100), digits = 1),
-         PercNoHealthInsurance = round(((NoHealthInsuranceE/HealthInsuranceUniverseE)*100), digits = 1),
-         pct_disability = round(((DisabilityE/DisabilityUniverseE)*100), digits = 1),
-         pct_poverty = round(((BelowPovertyE/PovertyUniverseE)*100), digits = 1),
-         PctBlackBelowPov = round(((BlackBelowPovE/BlackPopE)*100), digits = 1),
-         PctAsianBelowPov = round(((AsianBelowPovE/AsianPopE)*100), digits = 1),
-         PctOtherBelowPov = round(((OtherBelowPovE/OtherPopE)*100), digits = 1),
-         PctMultiracialBelowPov = round(((MultiracialBelowPovE/MultiracialPopE)*100), digits = 1),
-         PctHispanicBelowPov = round(((HispanicBelowPovE/HispanicPopE)*100), digits = 1),
-         PctNHWhiteBelowPov = round(((NHWhiteBelowPovE/NHWhitePopE)*100), digits = 1),
-         PercHHSNAP = round(((HHSNAPE/SNAPUniverseE)*100), digits = 1),
-         PercNoVehicle = round(((NoVehicleE/VehicleUniverseE)*100), digits = 1),
+         PercNoHealthInsuranceE = round(((NoHealthInsuranceE/HealthInsuranceUniverseE)*100), digits = 1),
+         pct_disabilityE = round(((DisabilityE/DisabilityUniverseE)*100), digits = 1),
+         pct_povertyE = round(((BelowPovertyE/PovertyUniverseE)*100), digits = 1),
+         PctBlackBelowPovE = round(((BlackBelowPovE/BlackPopE)*100), digits = 1),
+         PctAsianBelowPovE = round(((AsianBelowPovE/AsianPopE)*100), digits = 1),
+         PctOtherBelowPovE = round(((OtherBelowPovE/OtherPopE)*100), digits = 1),
+         PctMultiracialBelowPovE = round(((MultiracialBelowPovE/MultiracialPopE)*100), digits = 1),
+         PctHispanicBelowPovE = round(((HispanicBelowPovE/HispanicPopE)*100), digits = 1),
+         PctNHWhiteBelowPovE = round(((NHWhiteBelowPovE/NHWhitePopE)*100), digits = 1),
+         PercHHSNAPE = round(((HHSNAPE/SNAPUniverseE)*100), digits = 1),
+         PercNoVehicleE = round(((NoVehicleE/VehicleUniverseE)*100), digits = 1),
          Perc65PlusAlone = round(((over65AloneE/over65HHE)*100), digits = 1),
-         PercLimitedEnglish = round(((LimitedEnglishE/LimitedEnglishUniverseE)*100), digits = 1),
-         pct_no_internet = round(((NoInternetE/InternetUniverseE)*100), digits = 1),
-         PercOwner = round(((OwnerOccupiedE/OccupiedHUE)*100), digits = 1),
-         PercRenter = round(((RenterOccupiedE/OccupiedHUE)*100), digits = 1),
-         PercDrovealone = round(((DroveAloneE/CommuteUniverseE)*100), digits = 1),
-         PercCarpooled = round(((CarpooledE/CommuteUniverseE)*100), digits = 1),
-         Pct_public_transport = round(((PublicTransportE/CommuteUniverseE)*100), digits = 1),
-         Perc_Walked = round(((WalkedE/CommuteUniverseE)*100), digits = 1),
-         PercOtherMeans = round(((OtherMeansE/CommuteUniverseE)*100), digits = 1),
-         pct_work_from_home = round(((WorkFromHomeE/CommuteUniverseE)*100), digits = 1))
+         PercLimitedEnglishE = round(((LimitedEnglishE/LimitedEnglishUniverseE)*100), digits = 1),
+         pct_no_internetE = round(((NoInternetE/InternetUniverseE)*100), digits = 1),
+         PercOwnerE = round(((OwnerOccupiedE/OccupiedHUE)*100), digits = 1),
+         PercRenterE = round(((RenterOccupiedE/OccupiedHUE)*100), digits = 1),
+         PercDrovealoneE = round(((DroveAloneE/CommuteUniverseE)*100), digits = 1),
+         PercCarpooledE = round(((CarpooledE/CommuteUniverseE)*100), digits = 1),
+         Pct_public_transportE = round(((PublicTransportE/CommuteUniverseE)*100), digits = 1),
+         Perc_WalkedE = round(((WalkedE/CommuteUniverseE)*100), digits = 1),
+         PercBicycleE = round(((BicycleE/CommuteUniverseE)*100), digits = 1),
+         PercTaxiMotorcycleOtherE = round(((TaxiMotorcycleE/CommuteUniverseE)*100), digits = 1),
+         pct_work_from_homeE = round(((WorkFromHomeE/CommuteUniverseE)*100), digits = 1))
 
 #Median variables for council districts can't be calculated from existing ACS median variables at the tract level.
 #You need to calculate the median based on the distribution of values for each median variable.
@@ -410,9 +415,9 @@ median_import <- read_excel("Median_Final.xlsx")
 CD_Data <- full_join(data_clean_CD, median_import, by=c("CouncilDistrict" = "CouncilDistrict"))
 
 #Remove variables used for median calculations.
-CD_Data[4:37] <- list(NULL)
-CD_Data[11:19] <- list(NULL)
-CD_Data[51:68] <- list(NULL)
+#CD_Data[4:37] <- list(NULL)
+#CD_Data[11:19] <- list(NULL)
+#CD_Data[51:68] <- list(NULL)
 
 #Add column with year of data and move column to the beginning.
 CD_Data$Year <- year
@@ -433,4 +438,4 @@ return(Final_CD_Data)
 }
 
 #Uncomment to run just this script
-#update_data_cd(year = year)
+update_data_cd(year = year)
