@@ -11,6 +11,8 @@ census_api_key(Sys.getenv("CENSUS_API_KEY"))
 year = 2023
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
+update_data_cd <- function(year){
+
 #List of ACS variables
 profile_varsCD <- c(
   
@@ -399,7 +401,7 @@ median_components <- select(data_clean_CD,
                             Commute60moreE)|>
   filter(CouncilDistrict <= 10)
 
-write_csv(median_components, "median_components.csv")
+#write_csv(median_components, "median_components.csv")
 
 #Import final median spreadsheet 
 median_import <- read_excel("Median_Final.xlsx")
@@ -424,4 +426,11 @@ pop_pyramid_data_CD <- Final_CD_Data |>
   pivot_wider(names_from = Sex, values_from = Population)|>
   rename(Male = M, Female = Fem)
 
-write_csv(pop_pyramid_data_CD, "data-clean/pop_pyramid_data_CD.csv")
+#write_csv(pop_pyramid_data_CD, "data-clean/pop_pyramid_data_CD.csv")
+
+return(Final_CD_Data)
+
+}
+
+#Uncomment to run just this script
+#update_data_cd(year = year)
