@@ -28,3 +28,5 @@ source("data_import_tracts.R")
 city_county_msa_data <- update_data(year = acs_year)
 council_district_data <- update_data_cd(year = acs_year)
 map_data <- update_map(year = acs_year)
+
+combined_dp_data <- bind_rows(city_county_msa_data, council_district_data)

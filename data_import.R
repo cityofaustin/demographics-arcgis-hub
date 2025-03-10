@@ -332,11 +332,12 @@ data_clean <- margin_clean |>
          PercHispanicOwner = round(((HH_HispanicOwnerE/HH_HispanicE)*100), digits = 1),
          PercHispanicRenter = round(((HH_HispanicRenterE/HH_HispanicE)*100)), digits = 1)
 
-#Add column with year of data
-data_clean$Year <- "2023"
+#Add column with year of data and move column to the beginning.
+data_clean$Year <- year
+updated_data_clean <- data_clean %>% relocate(Year, .before=NAME)
 
 #Create table for PowerBI population pyramid visualizations
-pop_pyramid_data <- data_clean |>
+pop_pyramid_data <- updated_data_clean |>
   select(GEOID, NAME, Year, MaleUnder_5_yearsE:Female85_years_and_overE)|>
   pivot_longer(cols = MaleUnder_5_yearsE:Female85_years_and_overE, names_to = "Age_Group", values_to = "Population")|>
   separate_wider_delim(col = Age_Group, delim = "ale", names = c("Sex", "Age_Group"))|>
@@ -345,7 +346,48 @@ pop_pyramid_data <- data_clean |>
 
 #write_csv(pop_pyramid_data, "data-clean/pop_pyramid_data.csv")
 
-return(data_clean)
+#Filter dataframe for final variables needed for profiles.
+Final_1yr_Data <- select(updated_data_clean, -TotalFBandNBE, 
+                                                -TotalFBE,
+                                                -FB_cit_EuropeE,
+                                                -FB_cit_AsiaE,
+                                                -FB_cit_AfricaE,
+                                                -FB_cit_OceaniaE,
+                                                -FB_cit_LatinAmerE,
+                                                -FB_cit_NorthAmerE,
+                                                -FB_noncit_EuropeE,
+                                                -FB_noncit_AsiaE,
+                                                -FB_noncit_AfricaE,
+                                                -FB_noncit_OceaniaE,
+                                                -FB_noncit_LatinAmerE,
+                                                -FB_noncit_NorthAmerE,
+                                                -WorkerClassUniverseE,
+                                                -emp_PrivateForProfitE,
+                                                -emp_PrivatNonProfitE,
+                                                -emp_Private,
+                                                -emp_LocalGovE,
+                                                -emp_StateGovE,
+                                                -emp_FedGovE,
+                                                -emp_Government,
+                                                -emp_SelfEmployE,
+                                                -CostBurdenedUniverseE,
+                                                -Total_Cost_Burdened_HH,
+                                                -over65HHE,
+                                                -over65AloneE,
+                                                -HHBlackE,
+                                                -HHBlackOwnerE,
+                                                -HHBlackRenterE,
+                                                -HHAsianE,
+                                                -HHAsianOwnerE,
+                                                -HHAsianRenterE,
+                                                -HH_NHWhiteE,
+                                                -HH_NHWhiteOwnerE,
+                                                -HH_NHWhiteRenterE,
+                                                -HH_HispanicE,
+                                                -HH_HispanicOwnerE,
+                                                -HH_HispanicRenterE)
+
+return(Final_1yr_Data)
 
 }
 

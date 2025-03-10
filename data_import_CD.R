@@ -414,18 +414,15 @@ median_import <- read_excel("Median_Final.xlsx")
 #Merge imported medians with cleaned variable table.
 CD_Data <- full_join(data_clean_CD, median_import, by=c("CouncilDistrict" = "CouncilDistrict"))
 
-#Remove variables used for median calculations.
-#CD_Data[4:37] <- list(NULL)
-#CD_Data[11:19] <- list(NULL)
-#CD_Data[51:68] <- list(NULL)
-
-#Add column with year of data and move column to the beginning.
+#Add column with year of data and move column to the beginning.Rename "CouncilDistrict" column to "NAME".
 CD_Data$Year <- year
-Final_CD_Data <- CD_Data %>% relocate(Year, .before=CouncilDistrict)
+colnames(CD_Data)[colnames(CD_Data) == "CouncilDistrict"] <- "NAME"
+CD_Data$NAME <- paste("Council District", CD_Data$NAME)
+Updated_CD_Data <- CD_Data %>% relocate(Year, .before=NAME)
 
 #Create table for PowerBI population pyramid visualizations
-pop_pyramid_data_CD <- Final_CD_Data |>
-  select(CouncilDistrict, Year, MaleUnder_5_yearsE:Female85_years_and_overE)|>
+pop_pyramid_data_CD <- Updated_CD_Data |>
+  select(NAME, Year, MaleUnder_5_yearsE:Female85_years_and_overE)|>
   pivot_longer(cols = MaleUnder_5_yearsE:Female85_years_and_overE, names_to = "Age_Group", values_to = "Population")|>
   separate_wider_delim(col = Age_Group, delim = "ale", names = c("Sex", "Age_Group"))|>
   pivot_wider(names_from = Sex, values_from = Population)|>
@@ -433,9 +430,77 @@ pop_pyramid_data_CD <- Final_CD_Data |>
 
 #write_csv(pop_pyramid_data_CD, "data-clean/pop_pyramid_data_CD.csv")
 
+#Filter dataframe for final variables needed for profiles.
+Final_CD_Data <- select(Updated_CD_Data, -TotalFBandNBE,
+                                            -TotalFBE,
+                                            -VeteranUniverseE,
+                                            -VeteransE,
+                                            -Plus65E,
+                                            -Under18E,
+                                            -TotalHHE,
+                                            -HH_with_under18E,
+                                            -HH_livingaloneE,
+                                            -LaborForceE,
+                                            -UnemployedE,
+                                            -WorkerClassUniverseE,
+                                            -emp_PrivateForProfitE,
+                                            -emp_PrivatNonProfitE,
+                                            -emp_Private,
+                                            -emp_LocalGovE,
+                                            -emp_StateGovE,
+                                            -emp_FedGovE,
+                                            -emp_Government,
+                                            -emp_SelfEmployE,
+                                            -Pop25andoverE,
+                                            -HsorhigherE,
+                                            -BAorhigherE,
+                                            -CostBurdenedUniverseE,
+                                            -Total_Cost_Burdened_HH,
+                                            -HealthInsuranceUniverseE,
+                                            -NoHealthInsuranceE,
+                                            -DisabilityUniverseE,
+                                            -DisabilityE,
+                                            -PovertyUniverseE,
+                                            -BelowPovertyE,
+                                            -BlackPopE,
+                                            -BlackBelowPovE,
+                                            -AsianPopE,
+                                            -AsianBelowPovE,
+                                            -OtherPopE,
+                                            -OtherBelowPovE,
+                                            -MultiracialPopE,
+                                            -MultiracialBelowPovE,
+                                            -HispanicPopE,
+                                            -HispanicBelowPovE,
+                                            -NHWhitePopE,
+                                            -NHWhiteBelowPovE,
+                                            -SNAPUniverseE,
+                                            -HHSNAPE,
+                                            -VehicleUniverseE,
+                                            -NoVehicleE,
+                                            -over65HHE,
+                                            -over65AloneE,
+                                            -LimitedEnglishUniverseE,
+                                            -LimitedEnglishE,
+                                            -InternetUniverseE,
+                                            -NoInternetE,
+                                            -OccupiedHUE,
+                                            -OwnerOccupiedE,
+                                            -RenterOccupiedE,
+                                            -CommuteUniverseE,
+                                            -CommuteLess10minE,
+                                            -Commute10to14E,
+                                            -Commute15to19E,
+                                            -Commute20to24E,
+                                            -Commute25to29E,
+                                            -Commute30to34E,
+                                            -Commute35to44E,
+                                            -Commute45to59E,
+                                            -Commute60moreE)
+
 return(Final_CD_Data)
 
 }
 
 #Uncomment to run just this script
-update_data_cd(year = year)
+#update_data_cd(year = year)
