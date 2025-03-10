@@ -7,7 +7,10 @@ library(tigris)
 census_api_key(Sys.getenv("CENSUS_API_KEY"))
 
 year = 2023
+
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
+
+update_data <- function(year){
 
 #List of ACS variables
 profile_vars <- c(
@@ -285,7 +288,7 @@ austin_tracts_geo <- tracts(state = "TX", county = austin_msa_counties, year = y
 
 #Rename and combine queried data for export
 austin_acs1_2023 <- bind_rows(austin_data_county, austin_data_place, austin_data_msa)
-austin_acs5_2023 <- austin_data_tracts
+
 
 #write_csv(austin_acs1_2023, "raw-data/austin_acs1_2023.csv")
 #write_sf(austin_tracts_geo, "raw-data/austin_tracts_geo.geojson")
@@ -324,3 +327,20 @@ data_clean <- margin_clean |>
 
 #Add column with year of data
 data_clean$Year <- "2023"
+
+#Create table for PowerBI population pyramid visualizations
+pop_pyramid_data <- data_clean |>
+  select(GEOID, NAME, Year, MaleUnder_5_yearsE:Female85_years_and_overE)|>
+  pivot_longer(cols = MaleUnder_5_yearsE:Female85_years_and_overE, names_to = "Age_Group", values_to = "Population")|>
+  separate_wider_delim(col = Age_Group, delim = "ale", names = c("Sex", "Age_Group"))|>
+  pivot_wider(names_from = Sex, values_from = Population)|>
+  rename(Male = M, Female = Fem)
+
+#write_csv(pop_pyramid_data, "data-clean/pop_pyramid_data.csv")
+
+return(data_clean)
+
+}
+
+#Uncomment to run just this script
+#update_data(year = year)

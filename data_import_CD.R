@@ -11,6 +11,8 @@ census_api_key(Sys.getenv("CENSUS_API_KEY"))
 year = 2023
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
+update_data_cd <- function(year){
+
 #List of ACS variables
 profile_varsCD <- c(
   
@@ -399,7 +401,7 @@ median_components <- select(data_clean_CD,
                             Commute60moreE)|>
   filter(CouncilDistrict <= 10)
 
-write_csv(median_components, "median_components.csv")
+#write_csv(median_components, "median_components.csv")
 
 #Import final median spreadsheet 
 median_import <- read_excel("Median_Final.xlsx")
@@ -415,3 +417,20 @@ CD_Data[51:68] <- list(NULL)
 #Add column with year of data and move column to the beginning.
 CD_Data$Year <- year
 Final_CD_Data <- CD_Data %>% relocate(Year, .before=CouncilDistrict)
+
+#Create table for PowerBI population pyramid visualizations
+pop_pyramid_data_CD <- Final_CD_Data |>
+  select(CouncilDistrict, Year, MaleUnder_5_yearsE:Female85_years_and_overE)|>
+  pivot_longer(cols = MaleUnder_5_yearsE:Female85_years_and_overE, names_to = "Age_Group", values_to = "Population")|>
+  separate_wider_delim(col = Age_Group, delim = "ale", names = c("Sex", "Age_Group"))|>
+  pivot_wider(names_from = Sex, values_from = Population)|>
+  rename(Male = M, Female = Fem)
+
+#write_csv(pop_pyramid_data_CD, "data-clean/pop_pyramid_data_CD.csv")
+
+return(Final_CD_Data)
+
+}
+
+#Uncomment to run just this script
+#update_data_cd(year = year)

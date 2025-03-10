@@ -9,6 +9,8 @@ census_api_key(Sys.getenv("CENSUS_API_KEY"))
 year = 2023
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
+update_map <- function(year){
+
 #List of ACS variables
 map_vars <- c(
   Total_Pop = "S0101_C01_001",
@@ -56,3 +58,9 @@ data_clean_tracts <- austin_data_tracts |>
          HispanicCV = round((HispanicM/(1.645*HispanicE)*100), digits = 1)
   )
 
+return(data_clean_tracts)
+
+}
+
+#Uncomment to run just this script
+#update_map(year = year)
