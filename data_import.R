@@ -236,6 +236,7 @@ profile_vars <- c(
   HH_Hispanic = "B25003I_001",
   HH_HispanicOwner = "B25003I_002",
   HH_HispanicRenter = "B25003I_003",
+  HousingUnits = "DP04_0001",
   
   #Language
   SpeakSpanish = "S1601_C01_004",
