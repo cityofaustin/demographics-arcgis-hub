@@ -417,6 +417,7 @@ CD_Data <- full_join(data_clean_CD, median_import, by=c("CouncilDistrict" = "Cou
 #Add column with year of data and move column to the beginning.Rename "CouncilDistrict" column to "NAME".
 CD_Data$Year <- year
 colnames(CD_Data)[colnames(CD_Data) == "CouncilDistrict"] <- "NAME"
+CD_Data$GEOID <- as.character(CD_Data$NAME)
 CD_Data$NAME <- paste("Council District", CD_Data$NAME)
 Updated_CD_Data <- CD_Data %>% relocate(Year, .before=NAME)
 
