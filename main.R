@@ -14,6 +14,10 @@
 # The script will result in an updated final dataset as well as several
 # extra exported files. NEED TO COMPLETE COMMENTS LATER
 
+install.packages("writexl")
+library(writexl)
+
+
 acs_year <- 2023
 
 
@@ -245,4 +249,8 @@ dp_data_pg2 <- select(combined_dp_data, GEOID,
                       OpenSpace,
                       SingleFamily,
                       Undeveloped)
+
+#Export tables to Excel
+write_xlsx(dp_data_pg1, "Profile_Data_Page1.xlsx")
+write_xlsx(dp_data_pg2, "Profile_Data_Page2.xlsx")
                       
