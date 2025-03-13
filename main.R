@@ -14,9 +14,11 @@
 # The script will result in an updated final dataset as well as several
 # extra exported files. NEED TO COMPLETE COMMENTS LATER
 
+install.packages("readxl")
 install.packages("writexl")
 library(writexl)
-
+library(readxl)
+library(dplyr)
 
 acs_year <- 2023
 
@@ -36,32 +38,37 @@ map_data <- update_map(year = acs_year)
 #Combine city, county, MSA, and CD variables.
 combined_dp_data <- bind_rows(city_county_msa_data, council_district_data)
 
+#Import non-ACS data
+nonACS <- read_excel("DP_NonACS_Variables.xlsx", sheet = "Data")
+merged_dp_data <- merge(combined_dp_data, nonACS, by = "NAME", all.x = TRUE)
+
 #Add rows for data outside of ACS to be added.
-combined_dp_data$PopEstimate <- NA
-combined_dp_data$DDOccHousingUnits <- NA
-combined_dp_data$DDHousingUnits <- NA
-combined_dp_data$PopDensity <- NA
-combined_dp_data$DaytimePopDensity <- NA
-combined_dp_data$LowModIncome <- NA
-combined_dp_data$MedHomeClose <- NA
-combined_dp_data$AvMonthRent <- NA
-combined_dp_data$IncRstrctUnit <- NA
-combined_dp_data$Civic <- NA
-combined_dp_data$Commercial <- NA
-combined_dp_data$Industrial <- NA
-combined_dp_data$MixedUse <- NA
-combined_dp_data$Multifamily <- NA
-combined_dp_data$Office <- NA
-combined_dp_data$OpenSpace <- NA
-combined_dp_data$SingleFamily <- NA
-combined_dp_data$Undeveloped <- NA
-combined_dp_data$PublTransitStop <- NA
+#combined_dp_data$DDPopEstimate <- nonACS$DDPopEstimate
+#combined_dp_data$DDOccHousingUnits <- nonACS$DDOccHousingUnits
+#combined_dp_data$DDHousingUnits <- nonACS$DDHousingUnits
+#combined_dp_data$PopDensity <- nonACS$PopDensity
+#combined_dp_data$DaytimePopDensity <- nonACS$DaytimePopDensity
+#combined_dp_data$LowModIncome <- nonACS$LowModIncome
+#combined_dp_data$MedHomeClose <- nonACS$MedHomeClose
+#combined_dp_data$AvMonthRent <- nonACS$AvMonthRent
+#combined_dp_data$IncRstrctUnit <- nonACS$IncRstrctUnit
+#combined_dp_data$Civic <- nonACS$Civic
+#combined_dp_data$Commercial <- nonACS$Commercial
+#combined_dp_data$Industrial <- nonACS$Industrial
+#combined_dp_data$MixedUse <- nonACS$MixedUse
+#combined_dp_data$Multifamily <- nonACS$Multifamily
+#combined_dp_data$Office <- nonACS$Office
+#combined_dp_data$OpenSpace <- nonACS$OpenSpace
+#combined_dp_data$SingleFamily <- nonACS$SingleFamily
+#combined_dp_data$Undeveloped <- nonACS$Undeveloped
+#combined_dp_data$PubTransitStop <- nonACS$PubTransitStop
+
 
 #Variables for page 1 of profiles.
-dp_data_pg1 <- select(combined_dp_data, GEOID,
+dp_data_pg1 <- select(merged_dp_data, GEOID,
                       Year,
                       NAME,
-                      PopEstimate,
+                      DDPopEstimate,
                       Total_PopE,
                       MedianAgeE,
                       Perc_Immigrants,
@@ -164,7 +171,7 @@ dp_data_pg1 <- select(combined_dp_data, GEOID,
                       PercHispBAhigherE,)
 
 #Variables for page 2 of profiles.
-dp_data_pg2 <- select(combined_dp_data, GEOID,
+dp_data_pg2 <- select(merged_dp_data, GEOID,
                       Year,
                       NAME,
                       MedHomeClose,
@@ -239,7 +246,7 @@ dp_data_pg2 <- select(combined_dp_data, GEOID,
                       pct_work_from_homeE,
                       WorkersMeanTravelTimeE,
                       MedianCommute,
-                      PublTransitStop,
+                      PubTransitStop,
                       Civic,
                       Commercial,
                       Industrial,
@@ -251,6 +258,6 @@ dp_data_pg2 <- select(combined_dp_data, GEOID,
                       Undeveloped)
 
 #Export tables to Excel
-write_xlsx(dp_data_pg1, "Profile_Data_Page1.xlsx")
-write_xlsx(dp_data_pg2, "Profile_Data_Page2.xlsx")
-                      
+#write_xlsx(dp_data_pg1, "Profile_Data_Page1.xlsx")
+#write_xlsx(dp_data_pg2, "Profile_Data_Page2.xlsx")
+#write_xlsx(map_data, "MapUpdate.xlsx")
