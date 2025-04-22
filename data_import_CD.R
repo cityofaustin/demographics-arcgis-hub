@@ -155,7 +155,7 @@ profile_varsCD <- c(
   
   #Housing Costs
   CostBurdenedUniverse = "S2503_C01_001",
-  CostBurdened_lessthan20k = "S2503_C01_028",
+  CostBurdened_0to19999 = "S2503_C01_028",
   CostBurdened_20kto34999 = "S2503_C01_032",
   CostBurdened_35kto49999 = "S2503_C01_036",
   CostBurdened_50kto74999 = "S2503_C01_040",
@@ -309,7 +309,7 @@ data_clean_CD <- BindedDistricts |>
          pct_selfemploy = round((emp_SelfEmployE/(WorkerClassUniverseE)*100), digits = 1),
          PercHSorhigherE = round(((HsorhigherE/Pop25andoverE)*100), digits = 1),
          PercBAorhigherE = round(((BAorhigherE/Pop25andoverE)*100), digits =1),
-         Total_Cost_Burdened_HH = (CostBurdened_lessthan20kE + CostBurdened_20kto34999E + CostBurdened_35kto49999E + CostBurdened_50kto74999E + CostBurdened_75kmoreE),
+         Total_Cost_Burdened_HH = (CostBurdened_0to19999E + CostBurdened_20kto34999E + CostBurdened_35kto49999E + CostBurdened_50kto74999E + CostBurdened_75kmoreE),
          pct_cost_burdened = round(((Total_Cost_Burdened_HH/CostBurdenedUniverseE)*100), digits = 1),
          PercNoHealthInsuranceE = round(((NoHealthInsuranceE/HealthInsuranceUniverseE)*100), digits = 1),
          pct_disabilityE = round(((DisabilityE/DisabilityUniverseE)*100), digits = 1),

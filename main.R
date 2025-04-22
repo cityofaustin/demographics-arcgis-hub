@@ -42,27 +42,6 @@ combined_dp_data <- bind_rows(city_county_msa_data, council_district_data)
 nonACS <- read_excel("DP_NonACS_Variables.xlsx", sheet = "Data")
 merged_dp_data <- merge(combined_dp_data, nonACS, by = "NAME", all.x = TRUE)
 
-#Add rows for data outside of ACS to be added.
-#combined_dp_data$DDPopEstimate <- nonACS$DDPopEstimate
-#combined_dp_data$DDOccHousingUnits <- nonACS$DDOccHousingUnits
-#combined_dp_data$DDHousingUnits <- nonACS$DDHousingUnits
-#combined_dp_data$PopDensity <- nonACS$PopDensity
-#combined_dp_data$DaytimePopDensity <- nonACS$DaytimePopDensity
-#combined_dp_data$LowModIncome <- nonACS$LowModIncome
-#combined_dp_data$MedHomeClose <- nonACS$MedHomeClose
-#combined_dp_data$AvMonthRent <- nonACS$AvMonthRent
-#combined_dp_data$IncRstrctUnit <- nonACS$IncRstrctUnit
-#combined_dp_data$Civic <- nonACS$Civic
-#combined_dp_data$Commercial <- nonACS$Commercial
-#combined_dp_data$Industrial <- nonACS$Industrial
-#combined_dp_data$MixedUse <- nonACS$MixedUse
-#combined_dp_data$Multifamily <- nonACS$Multifamily
-#combined_dp_data$Office <- nonACS$Office
-#combined_dp_data$OpenSpace <- nonACS$OpenSpace
-#combined_dp_data$SingleFamily <- nonACS$SingleFamily
-#combined_dp_data$Undeveloped <- nonACS$Undeveloped
-#combined_dp_data$PubTransitStop <- nonACS$PubTransitStop
-
 
 #Variables for page 1 of profiles.
 dp_data_pg1 <- select(merged_dp_data, GEOID,
@@ -70,6 +49,19 @@ dp_data_pg1 <- select(merged_dp_data, GEOID,
                       NAME,
                       DDPopEstimate,
                       Total_PopE,
+                      Pop_2011,
+                      Pop_2012,
+                      Pop_2013,
+                      Pop_2014,
+                      Pop_2015,
+                      Pop_2016,
+                      Pop_2017,
+                      Pop_2018,
+                      Pop_2019,
+                      Pop_2020,
+                      Pop_2021,
+                      Pop_2022,
+                      Pop_2023,
                       MedianAgeE,
                       Perc_Immigrants,
                       BornEur,
@@ -78,6 +70,12 @@ dp_data_pg1 <- select(merged_dp_data, GEOID,
                       BornOceania,
                       BornLA,
                       BornNA,
+                      PercEurope,
+                      PercAsia,
+                      PercAfrica,
+                      PercOceania,
+                      PercLatinAmer,
+                      PercNorthAmer,
                       pct_veteransE,
                       Perc65plusE,
                       PercUnder18E,
@@ -128,7 +126,7 @@ dp_data_pg1 <- select(merged_dp_data, GEOID,
                       MFIHispanicE,
                       MFINHWhiteE,
                       LowModIncome,
-                      PercHHLess10kE,
+                      PercHH0to9999E,
                       PercHH10kto14999E,
                       PercHH15kto24999E,
                       PercHH25kto34999E,
@@ -149,6 +147,15 @@ dp_data_pg1 <- select(merged_dp_data, GEOID,
                       HU_20moreunitsE,
                       HU_mobilehomeE,
                       HU_boat_rv_vanE,
+                      Perc1unitDetached,
+                      Perc1unitAttached,
+                      Perc2units,
+                      Perc3or4units,
+                      Perc5to9units,
+                      Perc10to19units,
+                      Perc20plusunits,
+                      PercMobileHome,
+                      PercBoatsRVVans,
                       HH_average_sizeE,
                       PercHH_with_under18E,
                       Families_totalE,
@@ -176,7 +183,7 @@ dp_data_pg2 <- select(merged_dp_data, GEOID,
                       NAME,
                       MedHomeClose,
                       AvMonthRent,
-                      CostBurdened_lessthan20kE,
+                      CostBurdened_0to19999E,
                       CostBurdened_20kto34999E,
                       CostBurdened_35kto49999E,
                       CostBurdened_50kto74999E,
@@ -258,6 +265,6 @@ dp_data_pg2 <- select(merged_dp_data, GEOID,
                       Undeveloped)
 
 #Export tables to Excel
-#write_xlsx(dp_data_pg1, "Profile_Data_Page1.xlsx")
-#write_xlsx(dp_data_pg2, "Profile_Data_Page2.xlsx")
-#write_xlsx(map_data, "MapUpdate.xlsx")
+write_xlsx(dp_data_pg1, "Profile_Data_Page1.xlsx")
+write_xlsx(dp_data_pg2, "Profile_Data_Page2.xlsx")
+write_xlsx(map_data, "MapUpdate.xlsx")
