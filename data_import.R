@@ -124,7 +124,11 @@ profile_vars <- c(
   #Income
   MedianHouseholdIncome = "S1901_C01_012",
   MedianFamilyIncome = "S1901_C02_012",
-  PercHHLess10k = "S1901_C01_002",
+  MFIBlack = "B19113B_001",
+  MFIAsian = "B19113D_001",
+  MFIHispanic = "B19113I_001",
+  MFINHWhite = "B19113H_001",
+  PercHH0to9999 = "S1901_C01_002",
   PercHH10kto14999 = "S1901_C01_003",
   PercHH15kto24999 = "S1901_C01_004",
   PercHH25kto34999 = "S1901_C01_005",
@@ -146,6 +150,15 @@ profile_vars <- c(
   HU_20moreunits = "DP04_0013",
   HU_mobilehome = "DP04_0014",
   HU_boat_rv_van = "DP04_0015",
+  Perc1unitDetached = "DP04_0007P",
+  Perc1unitAttached = "DP04_0008P",
+  Perc2units = "DP04_0009P",
+  Perc3or4units = "DP04_0010P",
+  Perc5to9units = "DP04_0011P",
+  Perc10to19units = "DP04_0012P",
+  Perc20plusunits = "DP04_0013P",
+  PercMobileHome = "DP04_0014P",
+  PercBoatsRVVans = "DP04_0015P",
   HH_average_size = "S1101_C01_002",
   PercHH_with_under18 = "S1101_C01_010",
   Families_total = "S1101_C01_003",
@@ -153,7 +166,7 @@ profile_vars <- c(
   PercHH_livingalone = "S1101_C01_013",
   
   #Employees
-  pct_unemployed = "DP03_0005P",
+  pct_unemployed = "DP03_0009P",
   plus16_InLaborForce = "DP03_0002",
   
   #Employment Class
@@ -179,7 +192,7 @@ profile_vars <- c(
   
   #Housing Costs
   CostBurdenedUniverse = "S2503_C01_001",
-  CostBurdened_lessthan20k = "S2503_C01_028",
+  CostBurdened_0to19999 = "S2503_C01_028",
   CostBurdened_20kto34999 = "S2503_C01_032",
   CostBurdened_35kto49999 = "S2503_C01_036",
   CostBurdened_50kto74999 = "S2503_C01_040",
@@ -190,12 +203,12 @@ profile_vars <- c(
   NoHealthInsuraceUnder19 = "B27010_017",
   NoHealthInsurance65over = "B27010_066",
   pct_disability = "S1810_C03_001",
-  disability_HearingDifficulty = "S1810_C03_019",
-  disability_VisionDifficulty = "S1810_C03_029",
-  disability_CognitiveDisability = "S1810_C03_039",
-  disability_AmbulatoryDifficulty = "S1810_C03_047",
-  disability_SelfCareDifficulty = "S1810_C03_055",
-  disability_IndependentLivingDifficulty = "S1810_C03_063",
+  disability_HearingDifficulty = "S1810_C02_019",
+  disability_VisionDifficulty = "S1810_C02_029",
+  disability_CognitiveDisability = "S1810_C02_039",
+  disability_AmbulatoryDifficulty = "S1810_C02_047",
+  disability_SelfCareDifficulty = "S1810_C02_055",
+  disability_IndependentLivingDifficulty = "S1810_C02_063",
   pct_poverty = "S1701_C03_001",
   PctBlackBelowPov = "S1701_C03_014",
   PctAsianBelowPov = "S1701_C03_016",
@@ -232,6 +245,7 @@ profile_vars <- c(
   HH_Hispanic = "B25003I_001",
   HH_HispanicOwner = "B25003I_002",
   HH_HispanicRenter = "B25003I_003",
+  HousingUnits = "DP04_0001",
   
   #Language
   SpeakSpanish = "S1601_C01_004",
@@ -240,6 +254,13 @@ profile_vars <- c(
   SpeakOtherLang = "S1601_C01_016",
   
   #Commute
+  DroveAlone = "B08006_003",
+  Carpooled = "B08006_004",
+  PublicTransport = "B08006_008",
+  Walked = "B08006_015",
+  Bicycle = "B08006_014",
+  TaxiMotorcycle = "B08006_016",
+  WorkFromHome = "B08006_017",
   PercDrovealone = "S0801_C01_003",
   PercCarpooled = "S0801_C01_004",
   Pct_public_transport = "S0801_C01_009",
@@ -308,12 +329,28 @@ data_clean <- margin_clean |>
          BornOceania = (FB_cit_OceaniaE + FB_noncit_OceaniaE),
          BornLA = (FB_cit_LatinAmerE + FB_noncit_LatinAmerE),
          BornNA = (FB_cit_NorthAmerE + FB_noncit_NorthAmerE),
+         OriginUniverse = (BornEur + BornAsia + BornAfr + BornOceania + BornLA + BornNA),
+         PercEurope = ((BornEur/OriginUniverse) * 100),
+         PercAsia = ((BornAsia/OriginUniverse) * 100),
+         PercAfrica = ((BornAfr/OriginUniverse) * 100),
+         PercOceania = ((BornOceania/OriginUniverse) * 100),
+         PercLatinAmer = ((BornLA/OriginUniverse) * 100),
+         PercNorthAmer = ((BornNA/OriginUniverse) * 100),
+         Perc1unitDetached = (HU_1unit_detachedPE + 0),
+         Perc1unitAttached = (HU_1unit_attachedPE + 0),
+         Perc2units = (HU_2unitsPE + 0),
+         Perc3or4units = (HU_3or4unitsPE + 0),
+         Perc5to9units = (HU_5to9unitsPE + 0),
+         Perc10to19units = (HU_10to19unitsPE + 0),
+         Perc20plusunits = (HU_20moreunitsPE + 0),
+         PercMobileHome = (HU_mobilehomePE + 0),
+         PercBoatsRVVans = (HU_boat_rv_vanPE + 0),
          emp_Private = (emp_PrivateForProfitE + emp_PrivatNonProfitE),
          emp_Government = (emp_LocalGovE + emp_StateGovE + emp_FedGovE),
          pct_private = round((emp_Private/(WorkerClassUniverseE)*100), digits = 1),
          pct_government = round((emp_Government/(WorkerClassUniverseE)*100), digits = 1),
          pct_selfemploy = round((emp_SelfEmployE/(WorkerClassUniverseE)*100), digits = 1),
-         Total_Cost_Burdened_HH = (CostBurdened_lessthan20kE + CostBurdened_20kto34999E + CostBurdened_35kto49999E + CostBurdened_50kto74999E + CostBurdened_75kmoreE),
+         Total_Cost_Burdened_HH = (CostBurdened_0to19999E + CostBurdened_20kto34999E + CostBurdened_35kto49999E + CostBurdened_50kto74999E + CostBurdened_75kmoreE),
          pct_cost_burdened = round(((Total_Cost_Burdened_HH/CostBurdenedUniverseE)*100), digits = 1),
          Perc65PlusAlone = round(((over65AloneE/over65HHE)*100), digits = 1),
          PercBlackOwner = round(((HHBlackOwnerE/HHBlackE)*100), digits = 1),
@@ -325,11 +362,12 @@ data_clean <- margin_clean |>
          PercHispanicOwner = round(((HH_HispanicOwnerE/HH_HispanicE)*100), digits = 1),
          PercHispanicRenter = round(((HH_HispanicRenterE/HH_HispanicE)*100)), digits = 1)
 
-#Add column with year of data
-data_clean$Year <- "2023"
+#Add column with year of data and move column to the beginning.
+data_clean$Year <- year
+updated_data_clean <- data_clean %>% relocate(Year, .before=NAME)
 
 #Create table for PowerBI population pyramid visualizations
-pop_pyramid_data <- data_clean |>
+pop_pyramid_data <- updated_data_clean |>
   select(GEOID, NAME, Year, MaleUnder_5_yearsE:Female85_years_and_overE)|>
   pivot_longer(cols = MaleUnder_5_yearsE:Female85_years_and_overE, names_to = "Age_Group", values_to = "Population")|>
   separate_wider_delim(col = Age_Group, delim = "ale", names = c("Sex", "Age_Group"))|>
@@ -338,7 +376,84 @@ pop_pyramid_data <- data_clean |>
 
 #write_csv(pop_pyramid_data, "data-clean/pop_pyramid_data.csv")
 
-return(data_clean)
+#Filter dataframe for final variables needed for profiles.
+Final_1yr_Data <- select(updated_data_clean, -TotalFBandNBE, 
+                                                -TotalFBE,
+                                                -FB_cit_EuropeE,
+                                                -FB_cit_AsiaE,
+                                                -FB_cit_AfricaE,
+                                                -FB_cit_OceaniaE,
+                                                -FB_cit_LatinAmerE,
+                                                -FB_cit_NorthAmerE,
+                                                -FB_noncit_EuropeE,
+                                                -FB_noncit_AsiaE,
+                                                -FB_noncit_AfricaE,
+                                                -FB_noncit_OceaniaE,
+                                                -FB_noncit_LatinAmerE,
+                                                -FB_noncit_NorthAmerE,
+                                                -WorkerClassUniverseE,
+                                                -emp_PrivateForProfitE,
+                                                -emp_PrivatNonProfitE,
+                                                -emp_Private,
+                                                -emp_LocalGovE,
+                                                -emp_StateGovE,
+                                                -emp_FedGovE,
+                                                -emp_Government,
+                                                -emp_SelfEmployE,
+                                                -CostBurdenedUniverseE,
+                                                -Total_Cost_Burdened_HH,
+                                                -over65HHE,
+                                                -over65AloneE,
+                                                -HHBlackE,
+                                                -HHBlackOwnerE,
+                                                -HHBlackRenterE,
+                                                -HHAsianE,
+                                                -HHAsianOwnerE,
+                                                -HHAsianRenterE,
+                                                -HH_NHWhiteE,
+                                                -HH_NHWhiteOwnerE,
+                                                -HH_NHWhiteRenterE,
+                                                -HH_HispanicE,
+                                                -HH_HispanicOwnerE,
+                                                -HH_HispanicRenterE,
+                                                 -MaleUnder_5_yearsE,
+                                                 -Male5_to_9_yearsE,
+                                                 -Male10_to_14_yearsE,
+                                                 -Male15_to_19_yearsE,
+                                                 -Male20_to_24_yearsE,
+                                                 -Male25_to_29_yearsE,
+                                                 -Male30_to_34_yearsE,
+                                                 -Male35_to_39_yearsE,
+                                                 -Male40_to_44_yearsE,
+                                                 -Male45_to_49_yearsE,
+                                                 -Male50_to_54_yearsE,
+                                                 -Male55_to_59_yearsE,
+                                                 -Male60_to_64_yearsE,
+                                                 -Male65_to_69_yearsE,
+                                                 -Male70_to_74_yearsE,
+                                                 -Male75_to_79_yearsE,
+                                                 -Male80_to_84_yearsE,
+                                                 -Male85_years_and_overE,
+                                                 -FemaleUnder_5_yearsE,
+                                                 -Female5_to_9_yearsE,
+                                                 -Female10_to_14_yearsE,
+                                                 -Female15_to_19_yearsE,
+                                                 -Female20_to_24_yearsE,
+                                                 -Female25_to_29_yearsE,
+                                                 -Female30_to_34_yearsE,
+                                                 -Female35_to_39_yearsE,
+                                                 -Female40_to_44_yearsE,
+                                                 -Female45_to_49_yearsE,
+                                                 -Female50_to_54_yearsE,
+                                                 -Female55_to_59_yearsE,
+                                                 -Female60_to_64_yearsE,
+                                                 -Female65_to_69_yearsE,
+                                                 -Female70_to_74_yearsE,
+                                                 -Female75_to_79_yearsE,
+                                                 -Female80_to_84_yearsE,
+                                                 -Female85_years_and_overE)
+
+return(Final_1yr_Data)
 
 }
 

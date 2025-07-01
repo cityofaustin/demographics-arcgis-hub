@@ -58,7 +58,11 @@ data_clean_tracts <- austin_data_tracts |>
          HispanicCV = round((HispanicM/(1.645*HispanicE)*100), digits = 1)
   )
 
-return(data_clean_tracts)
+#Add column with year of data and move column to the beginning.
+data_clean_tracts$Year <- year
+Final_tract_Data <- data_clean_tracts %>% relocate(Year, .before=NAME)
+
+return(Final_tract_Data)
 
 }
 
