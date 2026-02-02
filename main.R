@@ -20,7 +20,7 @@ library(writexl)
 library(readxl)
 library(dplyr)
 
-acs_year <- 2023
+acs_year <- 2024
 
 
 ## Update Functions
@@ -265,6 +265,6 @@ dp_data_pg2 <- select(merged_dp_data, GEOID,
                       Undeveloped)
 
 #Export tables to Excel
-write_xlsx(dp_data_pg1, "Profile_Data_Page1.xlsx")
-write_xlsx(dp_data_pg2, "Profile_Data_Page2.xlsx")
-write_xlsx(map_data, "MapUpdate.xlsx")
+write_xlsx(dp_data_pg1, "Profile_Data_Page1_2024.xlsx")
+write_xlsx(dp_data_pg2, "Profile_Data_Page2_2024.xlsx")
+write_xlsx(map_data, "MapUpdate_2024.xlsx")

@@ -6,7 +6,7 @@ library(tigris)
 
 census_api_key(Sys.getenv("CENSUS_API_KEY"))
 
-year = 2023
+year = 2024
 
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
@@ -322,7 +322,7 @@ margin_clean <- austin_acs1_2023 |>
   select(!ends_with("M"))
 
 data_clean <- margin_clean |>
-  mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 1),
+  mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 0),
          BornEur = (FB_cit_EuropeE + FB_noncit_EuropeE),
          BornAsia = (FB_cit_AsiaE + FB_noncit_AsiaE),
          BornAfr = (FB_cit_AfricaE + FB_noncit_AfricaE),
@@ -351,16 +351,16 @@ data_clean <- margin_clean |>
          pct_government = round((emp_Government/(WorkerClassUniverseE)*100), digits = 1),
          pct_selfemploy = round((emp_SelfEmployE/(WorkerClassUniverseE)*100), digits = 1),
          Total_Cost_Burdened_HH = (CostBurdened_0to19999E + CostBurdened_20kto34999E + CostBurdened_35kto49999E + CostBurdened_50kto74999E + CostBurdened_75kmoreE),
-         pct_cost_burdened = round(((Total_Cost_Burdened_HH/CostBurdenedUniverseE)*100), digits = 1),
-         Perc65PlusAlone = round(((over65AloneE/over65HHE)*100), digits = 1),
-         PercBlackOwner = round(((HHBlackOwnerE/HHBlackE)*100), digits = 1),
-         PercBlackRenter = round(((HHBlackRenterE/HHBlackE)*100), digits = 1),
-         PercAsianOwner = round(((HHAsianOwnerE/HHAsianE)*100), digits = 1),
-         PercAsianRenter = round(((HHAsianRenterE/HHAsianE)*100), digits = 1),
-         PercNHWhiteOwner = round(((HH_NHWhiteOwnerE/HH_NHWhiteE)*100), digits = 1),
-         PercNHWhiteRenter = round(((HH_NHWhiteRenterE/HH_NHWhiteE)*100), digits = 1),
-         PercHispanicOwner = round(((HH_HispanicOwnerE/HH_HispanicE)*100), digits = 1),
-         PercHispanicRenter = round(((HH_HispanicRenterE/HH_HispanicE)*100)), digits = 1)
+         pct_cost_burdened = round(((Total_Cost_Burdened_HH/CostBurdenedUniverseE)*100), digits = 0),
+         Perc65PlusAlone = round(((over65AloneE/over65HHE)*100), digits = 0),
+         PercBlackOwner = round(((HHBlackOwnerE/HHBlackE)*100), digits = 0),
+         PercBlackRenter = round(((HHBlackRenterE/HHBlackE)*100), digits = 0),
+         PercAsianOwner = round(((HHAsianOwnerE/HHAsianE)*100), digits = 0),
+         PercAsianRenter = round(((HHAsianRenterE/HHAsianE)*100), digits = 0),
+         PercNHWhiteOwner = round(((HH_NHWhiteOwnerE/HH_NHWhiteE)*100), digits = 0),
+         PercNHWhiteRenter = round(((HH_NHWhiteRenterE/HH_NHWhiteE)*100), digits = 0),
+         PercHispanicOwner = round(((HH_HispanicOwnerE/HH_HispanicE)*100), digits = 0),
+         PercHispanicRenter = round(((HH_HispanicRenterE/HH_HispanicE)*100)), digits = 0)
 
 #Add column with year of data and move column to the beginning.
 data_clean$Year <- year

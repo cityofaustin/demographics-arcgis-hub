@@ -6,7 +6,7 @@ library(tigris)
 
 census_api_key(Sys.getenv("CENSUS_API_KEY"))
 
-year = 2023
+year = 2024
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
 update_map <- function(year){
