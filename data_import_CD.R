@@ -27,14 +27,14 @@ profile_varsCD <- c(
   Under18 = "S0101_C01_022",
   
   #Population by Race/Ethnicity
-  NHWhite = "DP05_0082",
-  NHBlack = "DP05_0083",
-  NH_AIAN = "DP05_0084",
-  NHAsian = "DP05_0085",
-  NH_NHPI = "DP05_0086",
-  NHOther = "DP05_0087",
-  NHMultiracial = "DP05_0088",
-  Hispanic = "DP05_0076",
+  NHWhite = "DP05_0096",
+  NHBlack = "DP05_0097",
+  NH_AIAN = "DP05_0098",
+  NHAsian = "DP05_0099",
+  NH_NHPI = "DP05_0100",
+  NHOther = "DP05_0101",
+  NHMultiracial = "DP05_0102",
+  Hispanic = "DP05_0090",
   
   #Population by Age
   MaleUnder_5_years = "S0101_C03_002",

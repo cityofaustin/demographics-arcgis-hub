@@ -39,7 +39,7 @@ map_data <- update_map(year = acs_year)
 combined_dp_data <- bind_rows(city_county_msa_data, council_district_data)
 
 #Import non-ACS data
-nonACS <- read_excel("DP_NonACS_Variables.xlsx", sheet = "Data")
+nonACS <- read_excel("DP_NonACS_Variables_2026.xlsx", sheet = "Data")
 merged_dp_data <- merge(combined_dp_data, nonACS, by = "NAME", all.x = TRUE)
 
 
@@ -263,8 +263,14 @@ dp_data_pg2 <- select(merged_dp_data, GEOID,
                       OpenSpace,
                       SingleFamily,
                       Undeveloped)
+#Creates an output folder for files to be saved.
+library(here)
 
-#Export tables to Excel
-write_xlsx(dp_data_pg1, "Profile_Data_Page1_2024.xlsx")
-write_xlsx(dp_data_pg2, "Profile_Data_Page2_2024.xlsx")
-write_xlsx(map_data, "MapUpdate_2024.xlsx")
+if (!dir.exists(here("output"))) {
+  dir.create(here("output"))
+}
+
+write_xlsx(dp_data_pg1, here("output", paste0("Profile_Data_Page1_", acs_year, ".xlsx")))
+write_xlsx(dp_data_pg2, here("output", paste0("Profile_Data_Page2_", acs_year, ".xlsx")))
+write_xlsx(map_data, here("output", paste0("MapUpdate_", acs_year, ".xlsx")))
+
