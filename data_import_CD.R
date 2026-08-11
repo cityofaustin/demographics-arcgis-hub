@@ -4,11 +4,12 @@ library(sf)
 library(mapview)
 library(tigris)
 library(readxl)
+library(writexl)
 library(data.table)
 
 census_api_key(Sys.getenv("CENSUS_API_KEY"))
 
-year = 2023
+year = 2024
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
 update_data_cd <- function(year){
@@ -26,14 +27,14 @@ profile_varsCD <- c(
   Under18 = "S0101_C01_022",
   
   #Population by Race/Ethnicity
-  NHWhite = "DP05_0082",
-  NHBlack = "DP05_0083",
-  NH_AIAN = "DP05_0084",
-  NHAsian = "DP05_0085",
-  NH_NHPI = "DP05_0086",
-  NHOther = "DP05_0087",
-  NHMultiracial = "DP05_0088",
-  Hispanic = "DP05_0076",
+  NHWhite = "DP05_0096",
+  NHBlack = "DP05_0097",
+  NH_AIAN = "DP05_0098",
+  NHAsian = "DP05_0099",
+  NH_NHPI = "DP05_0100",
+  NHOther = "DP05_0101",
+  NHMultiracial = "DP05_0102",
+  Hispanic = "DP05_0090",
   
   #Population by Age
   MaleUnder_5_years = "S0101_C03_002",
@@ -129,6 +130,15 @@ profile_varsCD <- c(
   
   #Households
   Occupied_HU = "DP04_0002",
+  HU_1unit_detached = "DP04_0007",
+  HU_1unit_attached = "DP04_0008",
+  HU_2units = "DP04_0009",
+  HU_3or4units = "DP04_0010",
+  HU_5to9units = "DP04_0011",
+  HU_10to19units = "DP04_0012",
+  HU_20moreunits = "DP04_0013",
+  HU_mobilehome = "DP04_0014",
+  HU_boat_rv_van = "DP04_0015",
   TotalHH = "B11005_001",
   HH_with_under18 = "B11005_002",
   Families_total = "S1101_C01_003",
@@ -203,6 +213,19 @@ profile_varsCD <- c(
   OccupiedHU = "DP04_0045",
   OwnerOccupied = "DP04_0046",
   RenterOccupied = "DP04_0047",
+  HHBlack = "B25003B_001",
+  HHBlackOwner = "B25003B_002",
+  HHBlackRenter = "B25003B_003",
+  HHAsian = "B25003D_001",
+  HHAsianOwner = "B25003D_002",
+  HHAsianRenter = "B25003D_003",
+  HH_NHWhite = "B25003H_001",
+  HH_NHWhiteOwner = "B25003H_002",
+  HH_NHWhiteRenter = "B25003H_003",
+  HH_Hispanic = "B25003I_001",
+  HH_HispanicOwner = "B25003I_002",
+  HH_HispanicRenter = "B25003I_003",
+  HousingUnits = "DP04_0001",
   
   #Language
   SpeakSpanish = "S1601_C01_004",
@@ -239,7 +262,8 @@ austin_data_tractsCD <- get_acs(
   state = "TX",
   county = austin_msa_counties,
   output = "wide",
-  survey = "acs5"
+  survey = "acs5",
+  geometry = FALSE
 )
 
 #Query for the geographic boundaries of the tracts in the five-county Austin MSA
@@ -293,126 +317,48 @@ BindedDistricts <- BindedDistricts[-c(11), ]
 
 
 #Calculate final percentages for profiles
-data_clean_CD <- BindedDistricts |>
-  mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 1),
-         pct_veteransE = round(((VeteransE/VeteranUniverseE)*100), digits = 1),
-         Perc65plusE = round(((Plus65E/Total_PopE)*100), digits = 1),
-         PercUnder18E = round(((Under18E/Total_PopE)*100), digits = 1),
+CD_Data <- BindedDistricts |>
+  mutate(Perc_Immigrants = round(((TotalFBE / TotalFBandNBE)*100), digits = 0),
+         pct_veteransE = round(((VeteransE/VeteranUniverseE)*100), digits = 0),
+         Perc65plusE = round(((Plus65E/Total_PopE)*100), digits = 0),
+         PercUnder18E = round(((Under18E/Total_PopE)*100), digits = 0),
          HH_average_sizeE = round((Total_PopE / HHTotalE), digits = 1),
-         PercHH_with_under18E = round(((HH_with_under18E/TotalHHE)*100), digits = 1),
-         PercHH_livingaloneE = round(((HH_livingaloneE/TotalHHE)*100), digits = 1),
-         pct_unemployedE = round(((UnemployedE/LaborForceE)*100), digits = 1),
+         PercHH_with_under18E = round(((HH_with_under18E/TotalHHE)*100), digits = 0),
+         PercHH_livingaloneE = round(((HH_livingaloneE/TotalHHE)*100), digits = 0),
+         pct_unemployedE = round(((UnemployedE/LaborForceE)*100), digits = 0),
          emp_Private = (emp_PrivateForProfitE + emp_PrivatNonProfitE),
          emp_Government = (emp_LocalGovE + emp_StateGovE + emp_FedGovE),
          pct_private = round((emp_Private/(WorkerClassUniverseE)*100), digits = 1),
          pct_government = round((emp_Government/(WorkerClassUniverseE)*100), digits = 1),
          pct_selfemploy = round((emp_SelfEmployE/(WorkerClassUniverseE)*100), digits = 1),
-         PercHSorhigherE = round(((HsorhigherE/Pop25andoverE)*100), digits = 1),
-         PercBAorhigherE = round(((BAorhigherE/Pop25andoverE)*100), digits =1),
+         PercHSorhigherE = round(((HsorhigherE/Pop25andoverE)*100), digits = 0),
+         PercBAorhigherE = round(((BAorhigherE/Pop25andoverE)*100), digits = 0),
          Total_Cost_Burdened_HH = (CostBurdened_0to19999E + CostBurdened_20kto34999E + CostBurdened_35kto49999E + CostBurdened_50kto74999E + CostBurdened_75kmoreE),
-         pct_cost_burdened = round(((Total_Cost_Burdened_HH/CostBurdenedUniverseE)*100), digits = 1),
-         PercNoHealthInsuranceE = round(((NoHealthInsuranceE/HealthInsuranceUniverseE)*100), digits = 1),
-         pct_disabilityE = round(((DisabilityE/DisabilityUniverseE)*100), digits = 1),
-         pct_povertyE = round(((BelowPovertyE/PovertyUniverseE)*100), digits = 1),
+         pct_cost_burdened = round(((Total_Cost_Burdened_HH/CostBurdenedUniverseE)*100), digits = 0),
+         PercNoHealthInsuranceE = round(((NoHealthInsuranceE/HealthInsuranceUniverseE)*100), digits = 0),
+         pct_disabilityE = round(((DisabilityE/DisabilityUniverseE)*100), digits = 0),
+         pct_povertyE = round(((BelowPovertyE/PovertyUniverseE)*100), digits = 0),
          PctBlackBelowPovE = round(((BlackBelowPovE/BlackPopE)*100), digits = 1),
          PctAsianBelowPovE = round(((AsianBelowPovE/AsianPopE)*100), digits = 1),
          PctOtherBelowPovE = round(((OtherBelowPovE/OtherPopE)*100), digits = 1),
          PctMultiracialBelowPovE = round(((MultiracialBelowPovE/MultiracialPopE)*100), digits = 1),
          PctHispanicBelowPovE = round(((HispanicBelowPovE/HispanicPopE)*100), digits = 1),
          PctNHWhiteBelowPovE = round(((NHWhiteBelowPovE/NHWhitePopE)*100), digits = 1),
-         PercHHSNAPE = round(((HHSNAPE/SNAPUniverseE)*100), digits = 1),
-         PercNoVehicleE = round(((NoVehicleE/VehicleUniverseE)*100), digits = 1),
-         Perc65PlusAlone = round(((over65AloneE/over65HHE)*100), digits = 1),
-         PercLimitedEnglishE = round(((LimitedEnglishE/LimitedEnglishUniverseE)*100), digits = 1),
-         pct_no_internetE = round(((NoInternetE/InternetUniverseE)*100), digits = 1),
+         PercHHSNAPE = round(((HHSNAPE/SNAPUniverseE)*100), digits = 0),
+         PercNoVehicleE = round(((NoVehicleE/VehicleUniverseE)*100), digits = 0),
+         Perc65PlusAlone = round(((over65AloneE/over65HHE)*100), digits = 0),
+         PercLimitedEnglishE = round(((LimitedEnglishE/LimitedEnglishUniverseE)*100), digits = 0),
+         pct_no_internetE = round(((NoInternetE/InternetUniverseE)*100), digits = 0),
          PercOwnerE = round(((OwnerOccupiedE/OccupiedHUE)*100), digits = 1),
          PercRenterE = round(((RenterOccupiedE/OccupiedHUE)*100), digits = 1),
-         PercDrovealoneE = round(((DroveAloneE/CommuteUniverseE)*100), digits = 1),
-         PercCarpooledE = round(((CarpooledE/CommuteUniverseE)*100), digits = 1),
-         Pct_public_transportE = round(((PublicTransportE/CommuteUniverseE)*100), digits = 1),
-         Perc_WalkedE = round(((WalkedE/CommuteUniverseE)*100), digits = 1),
-         PercBicycleE = round(((BicycleE/CommuteUniverseE)*100), digits = 1),
-         PercTaxiMotorcycleOtherE = round(((TaxiMotorcycleE/CommuteUniverseE)*100), digits = 1),
-         pct_work_from_homeE = round(((WorkFromHomeE/CommuteUniverseE)*100), digits = 1))
+         PercDrovealoneE = round(((DroveAloneE/CommuteUniverseE)*100), digits = 0),
+         PercCarpooledE = round(((CarpooledE/CommuteUniverseE)*100), digits = 0),
+         Pct_public_transportE = round(((PublicTransportE/CommuteUniverseE)*100), digits = 0),
+         Perc_WalkedE = round(((WalkedE/CommuteUniverseE)*100), digits = 0),
+         PercBicycleE = round(((BicycleE/CommuteUniverseE)*100), digits = 0),
+         PercTaxiMotorcycleOtherE = round(((TaxiMotorcycleE/CommuteUniverseE)*100), digits = 0),
+         pct_work_from_homeE = round(((WorkFromHomeE/CommuteUniverseE)*100), digits = 0))
 
-#Median variables for council districts can't be calculated from existing ACS median variables at the tract level.
-#You need to calculate the median based on the distribution of values for each median variable.
-#Here we extract the component variables needed to calculate the median for each variable and export as a file. 
-#This time we are calculating in Excel and then reloading the medians back into R.
-median_components <- select(data_clean_CD,
-                            CouncilDistrict,
-                            
-                            HHLess10kE,
-                            HH10kto14999E,
-                            HH15kto19999E,
-                            HH20kto24999E,
-                            HH25kto29999E,
-                            HH30kto34999E,
-                            HH35kto39999E,
-                            HH40kto44999E,
-                            HH45kto49999E,
-                            HH50kto59999E,
-                            HH60kto74999E,
-                            HH75kto99999E,
-                            HH100kto124999E,
-                            HH125kto149999E,
-                            HH150kto199999E,
-                            HH200kmoreE,
-                            
-                            FamLess10kE,
-                            Fam10kto14999E,
-                            Fam15kto19999E,
-                            Fam20kto24999E,
-                            Fam25kto29999E,
-                            Fam30kto34999E,
-                            Fam35kto39999E,
-                            Fam40kto44999E,
-                            Fam45kto49999E,
-                            Fam50kto59999E,
-                            Fam60kto74999E,
-                            Fam75kto99999E,
-                            Fam100kto124999E,
-                            Fam125kto149999E,
-                            Fam150kto199999E,
-                            Fam200kmoreE, 
-                            
-                            TotalUnder_5_yearsE,
-                            Total5_to_9_yearsE,
-                            Total10_to_14_yearsE,
-                            Total15_to_19_yearsE,
-                            Total20_to_24_yearsE,
-                            Total25_to_29_yearsE,
-                            Total30_to_34_yearsE,
-                            Total35_to_39_yearsE,
-                            Total40_to_44_yearsE,
-                            Total45_to_49_yearsE,
-                            Total50_to_54_yearsE,
-                            Total55_to_59_yearsE,
-                            Total60_to_64_yearsE,
-                            Total65_to_69_yearsE,
-                            Total70_to_74_yearsE,
-                            Total75_to_79_yearsE,
-                            Total80_to_84_yearsE,
-                            Total85_years_and_overE,
-                            
-                            CommuteLess10minE,
-                            Commute10to14E,
-                            Commute15to19E,
-                            Commute20to24E,
-                            Commute25to29E,
-                            Commute30to34E,
-                            Commute35to44E,
-                            Commute45to59E,
-                            Commute60moreE)|>
-  filter(CouncilDistrict <= 10)
-
-#write_csv(median_components, "median_components.csv")
-
-#Import final median spreadsheet 
-median_import <- read_excel("Median_Final.xlsx")
-
-#Merge imported medians with cleaned variable table.
-CD_Data <- full_join(data_clean_CD, median_import, by=c("CouncilDistrict" = "CouncilDistrict"))
 
 #Add column with year of data and move column to the beginning.Rename "CouncilDistrict" column to "NAME".
 CD_Data$Year <- year
@@ -421,175 +367,209 @@ CD_Data$GEOID <- as.character(CD_Data$NAME)
 CD_Data$NAME <- paste("Council District", CD_Data$NAME)
 Updated_CD_Data <- CD_Data %>% relocate(Year, .before=NAME)
 
-#Create table for PowerBI population pyramid visualizations
-pop_pyramid_data_CD <- Updated_CD_Data |>
-  select(NAME, Year, MaleUnder_5_yearsE:Female85_years_and_overE)|>
-  pivot_longer(cols = MaleUnder_5_yearsE:Female85_years_and_overE, names_to = "Age_Group", values_to = "Population")|>
-  separate_wider_delim(col = Age_Group, delim = "ale", names = c("Sex", "Age_Group"))|>
-  pivot_wider(names_from = Sex, values_from = Population)|>
-  rename(Male = M, Female = Fem)
-
-#write_csv(pop_pyramid_data_CD, "data-clean/pop_pyramid_data_CD.csv")
-
-#Filter dataframe for final variables needed for profiles.
-Final_CD_Data <- select(Updated_CD_Data, -TotalFBandNBE,
-                                            -TotalFBE,
-                                            -VeteranUniverseE,
-                                            -VeteransE,
-                                            -Plus65E,
-                                            -Under18E,
-                                            -TotalHHE,
-                                            -HH_with_under18E,
-                                            -HH_livingaloneE,
-                                            -LaborForceE,
-                                            -UnemployedE,
-                                            -WorkerClassUniverseE,
-                                            -emp_PrivateForProfitE,
-                                            -emp_PrivatNonProfitE,
-                                            -emp_Private,
-                                            -emp_LocalGovE,
-                                            -emp_StateGovE,
-                                            -emp_FedGovE,
-                                            -emp_Government,
-                                            -emp_SelfEmployE,
-                                            -Pop25andoverE,
-                                            -HsorhigherE,
-                                            -BAorhigherE,
-                                            -CostBurdenedUniverseE,
-                                            -Total_Cost_Burdened_HH,
-                                            -HealthInsuranceUniverseE,
-                                            -NoHealthInsuranceE,
-                                            -DisabilityUniverseE,
-                                            -DisabilityE,
-                                            -PovertyUniverseE,
-                                            -BelowPovertyE,
-                                            -BlackPopE,
-                                            -BlackBelowPovE,
-                                            -AsianPopE,
-                                            -AsianBelowPovE,
-                                            -OtherPopE,
-                                            -OtherBelowPovE,
-                                            -MultiracialPopE,
-                                            -MultiracialBelowPovE,
-                                            -HispanicPopE,
-                                            -HispanicBelowPovE,
-                                            -NHWhitePopE,
-                                            -NHWhiteBelowPovE,
-                                            -SNAPUniverseE,
-                                            -HHSNAPE,
-                                            -VehicleUniverseE,
-                                            -NoVehicleE,
-                                            -over65HHE,
-                                            -over65AloneE,
-                                            -LimitedEnglishUniverseE,
-                                            -LimitedEnglishE,
-                                            -InternetUniverseE,
-                                            -NoInternetE,
-                                            -OccupiedHUE,
-                                            -OwnerOccupiedE,
-                                            -RenterOccupiedE,
-                                            -HHTotalE,
-                                            -HHLess10kE,
-                                            -HH10kto14999E,
-                                            -HH15kto19999E,
-                                            -HH20kto24999E,
-                                            -HH25kto29999E,
-                                            -HH30kto34999E,
-                                            -HH35kto39999E,
-                                            -HH40kto44999E,
-                                            -HH45kto49999E,
-                                            -HH50kto59999E,
-                                            -HH60kto74999E,
-                                            -HH75kto99999E,
-                                            -HH100kto124999E,
-                                            -HH125kto149999E,
-                                            -HH150kto199999E,
-                                            -HH200kmoreE,
-                                            -FamTotalE,
-                                            -FamLess10kE,
-                                            -Fam10kto14999E,
-                                            -Fam15kto19999E,
-                                            -Fam20kto24999E,
-                                            -Fam25kto29999E,
-                                            -Fam30kto34999E,
-                                            -Fam35kto39999E,
-                                            -Fam40kto44999E,
-                                            -Fam45kto49999E,
-                                            -Fam50kto59999E,
-                                            -Fam60kto74999E,
-                                            -Fam75kto99999E,
-                                            -Fam100kto124999E,
-                                            -Fam125kto149999E,
-                                            -Fam150kto199999E,
-                                            -Fam200kmoreE,
-                                            -TotalUnder_5_yearsE,
-                                            -Total5_to_9_yearsE,
-                                            -Total10_to_14_yearsE,
-                                            -Total15_to_19_yearsE,
-                                            -Total20_to_24_yearsE,
-                                            -Total25_to_29_yearsE,
-                                            -Total30_to_34_yearsE,
-                                            -Total35_to_39_yearsE,
-                                            -Total40_to_44_yearsE,
-                                            -Total45_to_49_yearsE,
-                                            -Total50_to_54_yearsE,
-                                            -Total55_to_59_yearsE,
-                                            -Total60_to_64_yearsE,
-                                            -Total65_to_69_yearsE,
-                                            -Total70_to_74_yearsE,
-                                            -Total75_to_79_yearsE,
-                                            -Total80_to_84_yearsE,
-                                            -Total85_years_and_overE,
-                                            -MaleUnder_5_yearsE,
-                                            -Male5_to_9_yearsE,
-                                            -Male10_to_14_yearsE,
-                                            -Male15_to_19_yearsE,
-                                            -Male20_to_24_yearsE,
-                                            -Male25_to_29_yearsE,
-                                            -Male30_to_34_yearsE,
-                                            -Male35_to_39_yearsE,
-                                            -Male40_to_44_yearsE,
-                                            -Male45_to_49_yearsE,
-                                            -Male50_to_54_yearsE,
-                                            -Male55_to_59_yearsE,
-                                            -Male60_to_64_yearsE,
-                                            -Male65_to_69_yearsE,
-                                            -Male70_to_74_yearsE,
-                                            -Male75_to_79_yearsE,
-                                            -Male80_to_84_yearsE,
-                                            -Male85_years_and_overE,
-                                            -FemaleUnder_5_yearsE,
-                                            -Female5_to_9_yearsE,
-                                            -Female10_to_14_yearsE,
-                                            -Female15_to_19_yearsE,
-                                            -Female20_to_24_yearsE,
-                                            -Female25_to_29_yearsE,
-                                            -Female30_to_34_yearsE,
-                                            -Female35_to_39_yearsE,
-                                            -Female40_to_44_yearsE,
-                                            -Female45_to_49_yearsE,
-                                            -Female50_to_54_yearsE,
-                                            -Female55_to_59_yearsE,
-                                            -Female60_to_64_yearsE,
-                                            -Female65_to_69_yearsE,
-                                            -Female70_to_74_yearsE,
-                                            -Female75_to_79_yearsE,
-                                            -Female80_to_84_yearsE,
-                                            -Female85_years_and_overE,
-                                            -CommuteUniverseE,
-                                            -CommuteLess10minE,
-                                            -Commute10to14E,
-                                            -Commute15to19E,
-                                            -Commute20to24E,
-                                            -Commute25to29E,
-                                            -Commute30to34E,
-                                            -Commute35to44E,
-                                            -Commute45to59E,
-                                            -Commute60moreE)
-
-return(Final_CD_Data)
-
+#Median Family Income
+get_median_fam_income <- function(row) {
+  lower_bounds <- c(0, 10000, 15000, 20000, 25000, 30000, 35000,
+                    40000, 45000, 50000, 60000, 75000, 100000, 125000, 150000, 200000)
+  upper_bounds <- c(9999, 14999, 19999, 24999, 29999, 34999, 39999,
+                    44999, 49999, 59999, 74999, 99999, 124999, 149999, 199999, Inf)
+  
+  freq <- as.numeric(c(
+    row$FamLess10kE,
+    row$Fam10kto14999E,
+    row$Fam15kto19999E,
+    row$Fam20kto24999E,
+    row$Fam25kto29999E,
+    row$Fam30kto34999E,
+    row$Fam35kto39999E,
+    row$Fam40kto44999E,
+    row$Fam45kto49999E,
+    row$Fam50kto59999E,
+    row$Fam60kto74999E,
+    row$Fam75kto99999E,
+    row$Fam100kto124999E,
+    row$Fam125kto149999E,
+    row$Fam150kto199999E,
+    row$Fam200kmoreE
+  ))
+  
+  n <- sum(freq, na.rm = TRUE)
+  if (n == 0) return(NA)
+  
+  cum_freq <- cumsum(freq)
+  median_position <- n / 2
+  median_class_index <- which(cum_freq >= median_position)[1]
+  
+  Lm <- lower_bounds[median_class_index]
+  F  <- ifelse(median_class_index == 1, 0, cum_freq[median_class_index - 1])
+  fm <- freq[median_class_index]
+  i <- ifelse(is.infinite(upper_bounds[median_class_index]),
+              NA,
+              upper_bounds[median_class_index] - lower_bounds[median_class_index] + 1)
+  
+  if (is.na(i)) {
+    median_income <- Lm
+  } else {
+    median_income <- Lm + ((median_position - F) / fm) * i
+  }
+  
+  return(median_income)
 }
+
+#Median Household Income
+get_median_hh_income <- function(row) {
+  lower_bounds <- c(0, 10000, 15000, 20000, 25000, 30000, 35000,
+                    40000, 45000, 50000, 60000, 75000, 100000, 125000, 150000, 200000)
+  upper_bounds <- c(9999, 14999, 19999, 24999, 29999, 34999, 39999,
+                    44999, 49999, 59999, 74999, 99999, 124999, 149999, 199999, Inf)
+  
+  freq <- as.numeric(c(
+    row$HHLess10kE,
+    row$HH10kto14999E,
+    row$HH15kto19999E,
+    row$HH20kto24999E,
+    row$HH25kto29999E,
+    row$HH30kto34999E,
+    row$HH35kto39999E,
+    row$HH40kto44999E,
+    row$HH45kto49999E,
+    row$HH50kto59999E,
+    row$HH60kto74999E,
+    row$HH75kto99999E,
+    row$HH100kto124999E,
+    row$HH125kto149999E,
+    row$HH150kto199999E,
+    row$HH200kmoreE
+  ))
+  
+  n <- sum(freq, na.rm = TRUE)
+  if (n == 0) return(NA)
+  
+  cum_freq <- cumsum(freq)
+  median_position <- n / 2
+  median_class_index <- which(cum_freq >= median_position)[1]
+  
+  Lm <- lower_bounds[median_class_index]
+  F  <- ifelse(median_class_index == 1, 0, cum_freq[median_class_index - 1])
+  fm <- freq[median_class_index]
+  i <- ifelse(is.infinite(upper_bounds[median_class_index]),
+              NA,
+              upper_bounds[median_class_index] - lower_bounds[median_class_index] + 1)
+  
+  if (is.na(i)) {
+    median_income <- Lm
+  } else {
+    median_income <- Lm + ((median_position - F) / fm) * i
+  }
+  
+  return(median_income)
+}
+
+#Median Age
+get_median_age <- function(row) {
+  # Age bins from ACS S0101_C01_002 through S0101_C01_019
+  lower_bounds <- c(0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85)
+  upper_bounds <- c(4, 9, 14, 19, 24, 29, 34, 39, 44, 49, 54, 59, 64, 69, 74, 79, 84, Inf)
+  
+  freq <- as.numeric(c(
+    row$TotalUnder_5_yearsE,
+    row$Total5_to_9_yearsE,
+    row$Total10_to_14_yearsE,
+    row$Total15_to_19_yearsE,
+    row$Total20_to_24_yearsE,
+    row$Total25_to_29_yearsE,
+    row$Total30_to_34_yearsE,
+    row$Total35_to_39_yearsE,
+    row$Total40_to_44_yearsE,
+    row$Total45_to_49_yearsE,
+    row$Total50_to_54_yearsE,
+    row$Total55_to_59_yearsE,
+    row$Total60_to_64_yearsE,
+    row$Total65_to_69_yearsE,
+    row$Total70_to_74_yearsE,
+    row$Total75_to_79_yearsE,
+    row$Total80_to_84_yearsE,
+    row$Total85_years_and_overE
+  ))
+  
+  n <- sum(freq, na.rm = TRUE)
+  if (n == 0) return(NA)
+  
+  cum_freq <- cumsum(freq)
+  median_position <- n / 2
+  median_class_index <- which(cum_freq >= median_position)[1]
+  
+  Lm <- lower_bounds[median_class_index]
+  F  <- ifelse(median_class_index == 1, 0, cum_freq[median_class_index - 1])
+  fm <- freq[median_class_index]
+  i <- ifelse(is.infinite(upper_bounds[median_class_index]),
+              NA,
+              upper_bounds[median_class_index] - lower_bounds[median_class_index] + 1)
+  
+  if (is.na(i)) {
+    median_age <- Lm
+  } else {
+    median_age <- Lm + ((median_position - F) / fm) * i
+  }
+  
+  return(median_age)
+}
+
+#Median commute time
+get_median_commute <- function(row) {
+  lower_bounds <- c(0, 10, 15, 20, 25, 30, 35, 45, 60)
+  upper_bounds <- c(9, 14, 19, 24, 29, 34, 44, 59, Inf)
+  
+  freq <- as.numeric(c(
+    row$CommuteLess10minE,
+    row$Commute10to14E,
+    row$Commute15to19E,
+    row$Commute20to24E,
+    row$Commute25to29E,
+    row$Commute30to34E,
+    row$Commute35to44E,
+    row$Commute45to59E,
+    row$Commute60moreE
+  ))
+  
+  n <- sum(freq, na.rm = TRUE)
+  if (n == 0) return(NA)
+  
+  cum_freq <- cumsum(freq)
+  median_position <- n / 2
+  median_class_index <- which(cum_freq >= median_position)[1]
+  
+  Lm <- lower_bounds[median_class_index]
+  F  <- ifelse(median_class_index == 1, 0, cum_freq[median_class_index - 1])
+  fm <- freq[median_class_index]
+  i <- ifelse(is.infinite(upper_bounds[median_class_index]),
+              NA,
+              upper_bounds[median_class_index] - lower_bounds[median_class_index] + 1)
+  
+  if (is.na(i)) {
+    median_commute <- Lm
+  } else {
+    median_commute <- Lm + ((median_position - F) / fm) * i
+  }
+  
+  return(median_commute)
+}
+
+
+
+CD_Data <- CD_Data %>%
+  rowwise() %>%
+  mutate(
+    MedianFamilyIncomeE = get_median_fam_income(cur_data()),
+    MedianHouseholdIncomeE = get_median_hh_income(cur_data()),
+    MedianAgeE = get_median_age(cur_data()),
+    MedianCommute = get_median_commute(cur_data())
+  ) %>%
+  ungroup()}
+
+
+#Run it
+final_cd_data <- update_data_cd(year = 2024)
 
 #Uncomment to run just this script
 #update_data_cd(year = year)

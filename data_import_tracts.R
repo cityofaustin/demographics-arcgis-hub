@@ -6,7 +6,7 @@ library(tigris)
 
 census_api_key(Sys.getenv("CENSUS_API_KEY"))
 
-year = 2023
+year = 2024
 austin_msa_counties <- c("Bastrop", "Caldwell", "Hays", "Travis", "Williamson")
 
 update_map <- function(year){
@@ -17,14 +17,14 @@ map_vars <- c(
   MedianAge = "S0101_C01_032",
   PercPlus65 = "S0101_C02_030",
   MedianHouseholdIncome = "S1901_C01_012",
-  NHWhite = "DP05_0082",
-  NHBlack = "DP05_0083",
-  NH_AIAN = "DP05_0084",
-  NHAsian = "DP05_0085",
-  NH_NHPI = "DP05_0086",
-  NHOther = "DP05_0087",
-  NHMultiracial = "DP05_0088",
-  Hispanic = "DP05_0076",
+  NHWhite = "DP05_0096",
+  NHBlack = "DP05_0097",
+  NH_AIAN = "DP05_0098",
+  NHAsian = "DP05_0099",
+  NH_NHPI = "DP05_0100",
+  NHOther = "DP05_0101",
+  NHMultiracial = "DP05_0102",
+  Hispanic = "DP05_0090",
   PctFamBelowPov = "S1702_C02_001")
 
 #Query for ACS 5-year data for the tracts in the five-county Austin MSA
